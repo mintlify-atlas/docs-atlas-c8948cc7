@@ -1,0 +1,172 @@
+---
+title: nvim-autopairs
+description: Automatic bracket, quote, and parenthesis pairing with smart Treesitter integration
+---
+
+## Overview
+
+Location: `lua/leyland/plugins/autopairs.lua:1`
+
+nvim-autopairs automatically inserts matching pairs of brackets, quotes, and parentheses as you type, making code writing faster and reducing syntax errors. It integrates deeply with both Treesitter and nvim-cmp for intelligent pairing behavior.
+
+## Features
+
+### Automatic Pairing
+
+When you type an opening character, the closing character is automatically inserted:
+
+- `(` → `(|)` (cursor at `|`)
+- `[` → `[|]`
+- `{` → `{|}` 
+- `"` → `"|"`
+- `'` → `'|'`
+- `` ` `` → `` `|` ``
+
+### Smart Treesitter Integration
+
+Location: `lua/leyland/plugins/autopairs.lua:13`
+
+nvim-autopairs uses Treesitter to understand code context and skip pairing in specific situations:
+
+**Lua strings**: Pairs are disabled inside string nodes
+```lua
+local str = "don't add pairs here"
+--           ^ single quotes won't auto-pair inside strings
+```
+
+**JavaScript template strings**: Pairs are disabled inside template strings
+```javascript
+const html = `<div class="container"></div>`;
+//            ^ quotes won't auto-pair inside template strings
+```
+
+**Java**: Treesitter checking is disabled entirely for Java files
+
+### Auto-completion Integration
+
+Location: `lua/leyland/plugins/autopairs.lua:22-28`
+
+When you confirm a completion with `<CR>` (Enter), autopairs automatically adds the closing pair if needed. For example, selecting a function completion will add the opening `(` and automatically insert the closing `)`.
+
+## Configuration
+
+### Default Settings
+
+```lua
+autopairs.setup({
+  check_ts = true,  -- Enable Treesitter integration
+  ts_config = {
+    lua = { "string" },  -- Skip pairing in Lua strings
+    javascript = { "template_string" },  -- Skip in JS template strings
+    java = false,  -- Disable Treesitter for Java
+  },
+})
+```
+
+### Completion Integration
+
+Autopairs is configured to work with nvim-cmp's `confirm_done` event, ensuring that completing a function name automatically adds parentheses:
+
+```lua
+-- From autopairs.lua:28
+cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
+```
+
+## Behavior Examples
+
+### Function Calls
+
+Typing:
+```lua
+print
+```
+
+After typing `(`:
+```lua
+print(|)
+```
+
+### Nested Pairs
+
+nvim-autopairs handles nested pairs intelligently:
+
+```lua
+function example(|)  -- Type "{"
+function example({|})  -- Type another "{"
+function example({ {|} })
+```
+
+### String Escaping
+
+Inside strings, special characters are handled correctly:
+
+```lua
+local path = "C:\\Users\\|"  -- Backslash doesn't create pairs
+```
+
+## Common Patterns
+
+### Arrays and Objects
+
+**JavaScript/TypeScript:**
+```javascript
+const items = [|]  -- Auto-paired
+const config = {|} -- Auto-paired
+```
+
+**Lua:**
+```lua
+local items = {|} -- Auto-paired
+```
+
+### Function Definitions
+
+```lua
+function calculate(a, b)|  -- Type ")"
+function calculate(a, b)
+  -- cursor moves outside
+end
+```
+
+## Tips
+
+<Tip>
+  **Fast deletion**: Press `<BS>` (backspace) when cursor is between a pair to delete both characters at once.
+</Tip>
+
+<Tip>
+  **Skip closing**: Just type the closing character to move past it instead of inserting a duplicate.
+</Tip>
+
+<Note>
+  Autopairs only activates in Insert mode. It won't interfere with normal mode operations.
+</Note>
+
+## Integration with Other Plugins
+
+### nvim-cmp
+
+Fully integrated with completion menu. When you select a completion:
+- Functions get `()` appended
+- Methods get `()` appended
+- Objects/tables get `{}` appended
+
+### Treesitter
+
+Uses Treesitter's syntax tree to understand:
+- String contexts
+- Comment contexts
+- Template literal contexts
+- Other language-specific contexts
+
+## Related Documentation
+
+<CardGroup cols={2}>
+  <Card title="nvim-cmp" icon="sparkles" href="/lsp/autocompletion">
+    Learn about autocompletion integration
+  </Card>
+  
+  <Card title="Treesitter" icon="tree" href="/additional/treesitter">
+    Understand Treesitter syntax awareness
+  </Card>
+</CardGroup>

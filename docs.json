@@ -67,6 +67,7 @@
         "group": "Additional Plugins",
         "pages": [
           "additional/treesitter",
+          "additional/autopairs",
           "additional/git-integration",
           "additional/flash",
           "additional/trouble"
