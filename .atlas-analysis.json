@@ -1,0 +1,100 @@
+{
+  "projectType": "general",
+  "projectName": "nvim-luffy",
+  "projectDescription": "A modern Neovim configuration with LSP, fuzzy finding, and beautiful theming inspired by One Piece",
+  "theme": "palm",
+  "primaryColor": "#7aa89f",
+  "lightColor": "#a8d5ba",
+  "darkColor": "#527a6d",
+  "navigation": {
+    "groups": [
+      {
+        "group": "Get Started",
+        "pages": [
+          "introduction",
+          "installation",
+          "quickstart"
+        ]
+      },
+      {
+        "group": "Configuration",
+        "pages": [
+          "configuration/options",
+          "configuration/keymaps",
+          "configuration/autocommands"
+        ]
+      },
+      {
+        "group": "Core Plugins",
+        "pages": [
+          "plugins/overview",
+          "plugins/lazy-nvim",
+          "plugins/telescope",
+          "plugins/nvim-tree",
+          "plugins/harpoon"
+        ]
+      },
+      {
+        "group": "LSP & Development",
+        "pages": [
+          "lsp/overview",
+          "lsp/mason",
+          "lsp/autocompletion",
+          "lsp/formatting"
+        ]
+      },
+      {
+        "group": "UI & Appearance",
+        "pages": [
+          "ui/colorschemes",
+          "ui/alpha-dashboard",
+          "ui/statusline"
+        ]
+      },
+      {
+        "group": "Additional Plugins",
+        "pages": [
+          "additional/treesitter",
+          "additional/git-integration",
+          "additional/flash",
+          "additional/trouble"
+        ]
+      },
+      {
+        "group": "Customization",
+        "pages": [
+          "customization/adding-plugins",
+          "customization/keybindings",
+          "customization/colorscheme",
+          "customization/lsp-servers"
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Lazy.nvim plugin management with auto-installation",
+    "Full LSP support with Mason for 10+ language servers",
+    "Telescope fuzzy finder with custom keybindings",
+    "Harpoon for quick file navigation",
+    "Multiple colorscheme options (Catppuccin, Tokyo Night, Rose Pine, Bamboo)",
+    "nvim-cmp autocompletion with LuaSnip snippets",
+    "Conform.nvim formatting for 15+ languages",
+    "Treesitter syntax highlighting",
+    "Git integration with Neogit and Diffview",
+    "Custom One Piece themed Alpha dashboard"
+  ],
+  "publicApiSurface": [
+    "Core modules: leyland.core, leyland.lazy, leyland.lsp",
+    "Plugin configs: leyland.plugins.*",
+    "LSP configs: leyland.plugins.lsp.*",
+    "Leader key: <Space>",
+    "File finder: <leader><leader>",
+    "File explorer: <leader>e",
+    "Harpoon menu: <leader>h",
+    "Live grep: <leader>/",
+    "Code actions: <leader>ca",
+    "LSP rename: <leader>rn",
+    "Format: <leader>mp",
+    "Buffer close: <leader>bd"
+  ]
+}
