@@ -1,0 +1,475 @@
+---
+title: LSP Servers
+description: Learn how to add and configure LSP servers in nvim-luffy
+---
+
+## Overview
+
+nvim-luffy uses [Mason](https://github.com/williamboman/mason.nvim) to manage LSP servers, formatters, and linters. The configuration is located in `lua/leyland/plugins/lsp/mason.lua`, which handles the installation and setup of language servers.
+
+## Current Configuration
+
+From `lua/leyland/plugins/lsp/mason.lua:1-52`:
+
+```lua
+return {
+  {
+    "williamboman/mason-lspconfig.nvim",
+    opts = {
+      -- list of servers for mason to install
+      ensure_installed = {
+        "ts_ls",
+        "html",
+        "cssls",
+        "tailwindcss",
+        "svelte",
+        "lua_ls",
+        "graphql",
+        "emmet_ls",
+        "prismals",
+        "pyright",
+        "eslint",
+      },
+    },
+    dependencies = {
+      {
+        "williamboman/mason.nvim",
+        opts = {
+          ui = {
+            icons = {
+              package_installed = "✓",
+              package_pending = "➜",
+              package_uninstalled = "✗",
+            },
+          },
+        },
+      },
+      "neovim/nvim-lspconfig",
+    },
+  },
+  {
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
+    opts = {
+      ensure_installed = {
+        "prettier", -- prettier formatter
+        "stylua", -- lua formatter
+        "isort", -- python formatter
+        "black", -- python formatter
+        "pylint",
+        "eslint_d",
+      },
+    },
+    dependencies = {
+      "williamboman/mason.nvim",
+    },
+  },
+}
+```
+
+## Installed LSP Servers
+
+The following LSP servers are pre-configured:
+
+| Server | Language | Description |
+|--------|----------|-------------|
+| `ts_ls` | TypeScript/JavaScript | TypeScript language server |
+| `html` | HTML | HTML language server |
+| `cssls` | CSS | CSS language server |
+| `tailwindcss` | Tailwind CSS | Tailwind CSS IntelliSense |
+| `svelte` | Svelte | Svelte language server |
+| `lua_ls` | Lua | Lua language server |
+| `graphql` | GraphQL | GraphQL language server |
+| `emmet_ls` | HTML/CSS | Emmet completions |
+| `prismals` | Prisma | Prisma schema language server |
+| `pyright` | Python | Python language server |
+| `eslint` | JavaScript/TypeScript | ESLint language server |
+
+## Installed Formatters & Linters
+
+From `lua/leyland/plugins/lsp/mason.lua:39-46`:
+
+| Tool | Type | Language | Purpose |
+|------|------|----------|--------|
+| `prettier` | Formatter | Multiple | Code formatter for JS, TS, CSS, HTML, etc. |
+| `stylua` | Formatter | Lua | Lua code formatter |
+| `isort` | Formatter | Python | Python import sorter |
+| `black` | Formatter | Python | Python code formatter |
+| `pylint` | Linter | Python | Python linter |
+| `eslint_d` | Linter | JavaScript/TypeScript | Fast ESLint daemon |
+
+## Adding an LSP Server
+
+<Steps>
+
+### Find the server name
+
+Check available servers at [Mason LSP Server List](https://github.com/williamboman/mason-lspconfig.nvim/blob/main/doc/server-mapping.md) or run:
+
+```vim
+:Mason
+```
+
+Then press `2` to view available LSP servers.
+
+### Open the Mason configuration
+
+```bash
+nvim lua/leyland/plugins/lsp/mason.lua
+```
+
+### Add the server to ensure_installed
+
+Add your server name to the list on line 6-18. For example, to add Rust analyzer:
+
+```lua
+opts = {
+  ensure_installed = {
+    "ts_ls",
+    "html",
+    "cssls",
+    "tailwindcss",
+    "svelte",
+    "lua_ls",
+    "graphql",
+    "emmet_ls",
+    "prismals",
+    "pyright",
+    "eslint",
+    "rust_analyzer", -- Add this line
+  },
+},
+```
+
+### Restart Neovim or run Mason sync
+
+The server will be installed automatically on next startup, or run:
+
+```vim
+:Mason
+```
+
+Then press `U` to update and install packages.
+
+</Steps>
+
+## Removing an LSP Server
+
+<Steps>
+
+### Open the Mason configuration
+
+```bash
+nvim lua/leyland/plugins/lsp/mason.lua
+```
+
+### Remove the server from ensure_installed
+
+Delete or comment out the line with the server name:
+
+```lua
+opts = {
+  ensure_installed = {
+    "ts_ls",
+    -- "svelte", -- Removed this server
+    "lua_ls",
+    -- ... rest of servers
+  },
+},
+```
+
+### Uninstall the server (optional)
+
+The server will remain installed but won't be automatically reinstalled. To fully remove it:
+
+```vim
+:Mason
+```
+
+Navigate to the server and press `X` to uninstall.
+
+</Steps>
+
+## Adding Formatters & Linters
+
+<Steps>
+
+### Find the tool name
+
+Check available tools at:
+- [Mason Package List](https://mason-registry.dev/registry/list)
+- Or run `:Mason` and browse available packages
+
+### Add to mason-tool-installer
+
+Add your formatter/linter to the `ensure_installed` list starting at line 39:
+
+```lua
+{
+  "WhoIsSethDaniel/mason-tool-installer.nvim",
+  opts = {
+    ensure_installed = {
+      "prettier",
+      "stylua",
+      "isort",
+      "black",
+      "pylint",
+      "eslint_d",
+      "gofmt", -- Add Go formatter
+      "golangci-lint", -- Add Go linter
+    },
+  },
+}
+```
+
+### Configure the formatter (if applicable)
+
+If adding a formatter, you need to configure it in `lua/leyland/plugins/formatting.lua`. See the [formatting configuration](#configuring-formatters) section below.
+
+### Restart Neovim
+
+The tools will be installed automatically on next startup.
+
+</Steps>
+
+## Configuring Formatters
+
+Formatters need to be configured in `lua/leyland/plugins/formatting.lua` to be used. From `lua/leyland/plugins/formatting.lua:7-23`:
+
+```lua
+conform.setup({
+  formatters_by_ft = {
+    javascript = { "prettier" },
+    typescript = { "prettier" },
+    javascriptreact = { "prettier" },
+    typescriptreact = { "prettier" },
+    svelte = { "prettier" },
+    css = { "prettier" },
+    html = { "prettier" },
+    json = { "prettier" },
+    yaml = { "prettier" },
+    markdown = { "prettier" },
+    graphql = { "prettier" },
+    liquid = { "prettier" },
+    lua = { "stylua" },
+    python = { "isort", "black" },
+  },
+})
+```
+
+To add a formatter for a new language:
+
+```lua
+formatters_by_ft = {
+  -- ... existing formatters ...
+  go = { "gofmt" },
+  rust = { "rustfmt" },
+  c = { "clang-format" },
+}
+```
+
+## Popular LSP Servers
+
+Here are some commonly used LSP servers you might want to add:
+
+### Go
+
+```lua
+"gopls" -- Go language server
+```
+
+### Rust
+
+```lua
+"rust_analyzer" -- Rust language server
+```
+
+### C/C++
+
+```lua
+"clangd" -- C/C++ language server
+```
+
+### Java
+
+```lua
+"jdtls" -- Java language server
+```
+
+### PHP
+
+```lua
+"intelephense" -- PHP language server
+```
+
+### Ruby
+
+```lua
+"solargraph" -- Ruby language server
+```
+
+### Vue.js
+
+```lua
+"volar" -- Vue language server
+```
+
+### JSON
+
+```lua
+"jsonls" -- JSON language server
+```
+
+### YAML
+
+```lua
+"yamlls" -- YAML language server
+```
+
+### Markdown
+
+```lua
+"marksman" -- Markdown language server
+```
+
+## Mason UI
+
+Open the Mason interface to manage packages:
+
+```vim
+:Mason
+```
+
+### Mason Keybindings
+
+Inside the Mason UI:
+
+| Key | Action |
+|-----|--------|
+| `i` | Install package |
+| `U` | Update all installed packages |
+| `X` | Uninstall package |
+| `u` | Update package |
+| `c` | Check for new package versions |
+| `g?` | Show help |
+
+## Custom LSP Configuration
+
+For advanced LSP configuration (custom settings, handlers, etc.), edit `lua/leyland/plugins/lsp/lsp.lua`. This file handles the LSP setup and keybindings.
+
+### Example: Custom Server Settings
+
+To add custom settings for a language server:
+
+```lua
+local lspconfig = require("lspconfig")
+
+-- Custom Lua LSP settings
+lspconfig.lua_ls.setup({
+  settings = {
+    Lua = {
+      diagnostics = {
+        globals = { "vim" }, -- Recognize 'vim' as a global
+      },
+    },
+  },
+})
+
+-- Custom Rust Analyzer settings
+lspconfig.rust_analyzer.setup({
+  settings = {
+    ["rust-analyzer"] = {
+      cargo = {
+        allFeatures = true,
+      },
+      checkOnSave = {
+        command = "clippy",
+      },
+    },
+  },
+})
+```
+
+## Automatic Installation
+
+Mason will automatically install all servers listed in `ensure_installed` when you:
+
+1. Start Neovim for the first time after adding a server
+2. Run `:Mason` and press `U`
+3. Run `:MasonToolsUpdate` (for formatters/linters)
+
+## Troubleshooting
+
+<Warning>
+  **Server not starting**: Check `:LspInfo` to see server status and any error messages
+</Warning>
+
+<Warning>
+  **Installation failed**: Ensure you have the required dependencies (e.g., Node.js for many servers, Python for others)
+</Warning>
+
+<Warning>
+  **Formatter not working**: Make sure the formatter is both installed via Mason AND configured in `formatting.lua`
+</Warning>
+
+<Warning>
+  **Wrong server name**: Use the Mason name, not the package name. For example, use `ts_ls` not `typescript-language-server`
+</Warning>
+
+## Checking LSP Status
+
+To check which LSP servers are attached to the current buffer:
+
+```vim
+:LspInfo
+```
+
+To check Mason installation status:
+
+```vim
+:Mason
+```
+
+To check formatter status:
+
+```vim
+:ConformInfo
+```
+
+## Best Practices
+
+<Tip>
+  **Only install what you need**: Don't bloat your config with servers for languages you don't use
+</Tip>
+
+<Tip>
+  **Keep formatters in sync**: If you add a language server, also add its formatter to `formatting.lua`
+</Tip>
+
+<Tip>
+  **Use language-specific configs**: For complex setups, create separate config files for each language
+</Tip>
+
+<Tip>
+  **Check server requirements**: Some servers require Node.js, Python, or other runtimes to be installed
+</Tip>
+
+<Tip>
+  **Update regularly**: Run `:Mason` and press `U` periodically to update all servers
+</Tip>
+
+## Dependencies for Common Servers
+
+| Server | Required Dependencies |
+|--------|----------------------|
+| `ts_ls` | Node.js |
+| `pyright` | Python, Node.js |
+| `lua_ls` | None (self-contained) |
+| `rust_analyzer` | Rust toolchain |
+| `gopls` | Go |
+| `clangd` | C/C++ compiler |
+
+## Next Steps
+
+- [Adding Plugins](/customization/adding-plugins)
+- [Customize Keybindings](/customization/keybindings)
+- [Change Colorscheme](/customization/colorscheme)

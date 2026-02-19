@@ -1,0 +1,190 @@
+---
+title: Lazy.nvim Plugin Manager
+description: Configuration and usage of the Lazy.nvim plugin manager
+icon: box
+---
+
+## Overview
+
+[Lazy.nvim](https://github.com/folke/lazy.nvim) is a modern plugin manager for Neovim that provides automatic lazy-loading, fast startup times, and a clean configuration interface.
+
+## Installation
+
+Lazy.nvim is bootstrapped automatically if not present. The configuration checks for its existence and clones it if needed:
+
+```lua title="lua/leyland/lazy.lua" {1-12}
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+	vim.fn.system({
+		"git",
+		"clone",
+		"--filter=blob:none",
+		"https://github.com/folke/lazy.nvim.git",
+		"--branch=stable", -- latest stable release
+		lazypath,
+	})
+end
+vim.opt.rtp:prepend(lazypath)
+```
+
+<Note>
+  The `--filter=blob:none` flag creates a shallow clone for faster installation, and `--branch=stable` ensures you're using the latest stable release.
+</Note>
+
+## Setup Configuration
+
+Lazy.nvim is configured with two plugin import paths and several options:
+
+```lua title="lua/leyland/lazy.lua" {14-22}
+require("lazy").setup({ 
+  { import = "leyland.plugins" }, 
+  { import = "leyland.plugins.lsp" } 
+}, {
+	checker = {
+		enabled = true,
+		notify = false,
+	},
+	change_detection = {
+		notify = false,
+	},
+})
+```
+
+## Plugin Organization
+
+Plugins are organized into two main directories:
+
+<Accordion title="leyland.plugins">
+  Contains all core plugins:
+  
+  - `telescope.lua` - Fuzzy finder
+  - `nvim-tree.lua` - File explorer
+  - `harpoon.lua` - File navigation
+  - `treesitter.lua` - Syntax highlighting
+  - `nvim-cmp.lua` - Autocompletion
+  - `alpha.lua` - Dashboard
+  - `colorscheme.lua` - Color scheme
+  - And more...
+  
+  Each file returns a Lazy.nvim plugin specification table.
+</Accordion>
+
+<Accordion title="leyland.plugins.lsp">
+  Contains LSP-specific plugins:
+  
+  - `lspconfig.lua` - LSP configurations
+  - `mason.lua` - LSP server installer
+  - Language-specific configurations
+  
+  Separating LSP plugins keeps the codebase organized and makes it easier to manage language server setups.
+</Accordion>
+
+## Configuration Options
+
+### Auto-Checker
+
+```lua
+checker = {
+  enabled = true,    -- Automatically check for plugin updates
+  notify = false,    -- Don't show notifications for updates
+}
+```
+
+The checker runs in the background and detects when plugin updates are available. Notifications are disabled to avoid interrupting your workflow.
+
+<Tip>
+  Use `:Lazy` to open the Lazy.nvim UI and see available updates. Press `U` to update all plugins.
+</Tip>
+
+### Change Detection
+
+```lua
+change_detection = {
+  notify = false,    -- Don't notify when plugin files change
+}
+```
+
+Lazy.nvim watches for changes to plugin configuration files. When detected, it can automatically reload plugins. Notifications are disabled for a cleaner experience.
+
+## Common Commands
+
+Lazy.nvim provides several commands for plugin management:
+
+| Command | Description |
+|---------|-------------|
+| `:Lazy` | Open the Lazy.nvim UI |
+| `:Lazy update` | Update all plugins |
+| `:Lazy sync` | Install missing plugins and update existing ones |
+| `:Lazy clean` | Remove unused plugins |
+| `:Lazy profile` | Show plugin loading times |
+| `:Lazy log` | Show recent updates |
+| `:Lazy check` | Check for updates |
+
+## Lazy.nvim UI
+
+The Lazy.nvim UI provides a visual interface for managing plugins:
+
+<Accordion title="UI Keybindings">
+  When the Lazy UI is open (`:Lazy`), you can use:
+  
+  | Key | Action |
+  |-----|--------|
+  | `U` | Update all plugins |
+  | `u` | Update plugin under cursor |
+  | `C` | Check for updates |
+  | `S` | Sync (install + update + clean) |
+  | `X` | Clean unused plugins |
+  | `R` | Restore plugin to pinned version |
+  | `d` | Show diff for plugin |
+  | `l` | Show plugin log |
+  | `?` | Show help |
+</Accordion>
+
+## Adding New Plugins
+
+To add a new plugin to nvim-luffy:
+
+1. Create a new file in `lua/leyland/plugins/` (e.g., `my-plugin.lua`)
+2. Return a Lazy.nvim plugin specification:
+
+```lua title="lua/leyland/plugins/my-plugin.lua"
+return {
+  "username/plugin-name",
+  dependencies = { "other/plugin" },
+  config = function()
+    -- Plugin configuration
+    require("plugin-name").setup({
+      -- options
+    })
+  end,
+}
+```
+
+3. Restart Neovim or run `:Lazy sync`
+
+<Note>
+  Lazy.nvim automatically detects new plugin files and loads them. No need to manually require them in `lazy.lua`.
+</Note>
+
+## Performance
+
+Lazy.nvim optimizes startup time through:
+
+- **Lazy loading**: Plugins load only when needed
+- **Caching**: Compiled plugin specs for faster loading
+- **Parallel loading**: Plugins load concurrently
+- **Byte-compilation**: Lua files are compiled for speed
+
+Use `:Lazy profile` to see plugin loading times and identify bottlenecks.
+
+## Related Pages
+
+<CardGroup cols={2}>
+  <Card title="Telescope" icon="magnifying-glass" href="/plugins/telescope">
+    Fuzzy finder plugin configuration
+  </Card>
+  
+  <Card title="nvim-tree" icon="folder-tree" href="/plugins/nvim-tree">
+    File explorer plugin setup
+  </Card>
+</CardGroup>

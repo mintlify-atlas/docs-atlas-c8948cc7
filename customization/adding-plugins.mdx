@@ -1,0 +1,308 @@
+---
+title: Adding Plugins
+description: Learn how to add new plugins to nvim-luffy using Lazy.nvim
+---
+
+## Overview
+
+nvim-luffy uses [Lazy.nvim](https://github.com/folke/lazy.nvim) as its plugin manager. Plugins are organized in the `lua/leyland/plugins/` directory, and Lazy.nvim automatically loads all plugin files from this location.
+
+## Plugin Structure
+
+Lazy.nvim automatically imports plugins from:
+- `lua/leyland/plugins/` - General plugins
+- `lua/leyland/plugins/lsp/` - LSP-related plugins
+
+This is configured in `lua/leyland/lazy.lua:14`:
+
+```lua
+require("lazy").setup({ { import = "leyland.plugins" }, { import = "leyland.plugins.lsp" } })
+```
+
+## Plugin Spec Format
+
+Each plugin file should return a Lua table (or array of tables) with the plugin specification. Here are the common fields:
+
+| Field | Description |
+|-------|-------------|
+| `[1]` or first element | Plugin repository (e.g., `"author/repo"`) |
+| `dependencies` | Array of plugin dependencies |
+| `config` | Function to configure the plugin |
+| `opts` | Table passed to `require(plugin).setup(opts)` |
+| `keys` | Keybindings (lazy-loaded on key press) |
+| `event` | Events to trigger plugin loading |
+| `cmd` | Commands to trigger plugin loading |
+| `ft` | Filetypes to trigger plugin loading |
+| `branch` | Git branch to use |
+| `build` | Build command after installation |
+| `priority` | Load order (higher = earlier) |
+| `lazy` | Whether to lazy-load (default: true) |
+
+## Adding a New Plugin
+
+<Steps>
+
+### Create a new plugin file
+
+Create a new `.lua` file in `lua/leyland/plugins/`. The filename should describe the plugin (e.g., `todo-comments.lua`).
+
+```bash
+nvim lua/leyland/plugins/my-plugin.lua
+```
+
+### Write the plugin specification
+
+Use one of the templates below based on your needs.
+
+### Restart Neovim
+
+Lazy.nvim will automatically detect the new plugin file and install it on next startup, or run `:Lazy sync` to install immediately.
+
+</Steps>
+
+## Plugin Templates
+
+### Simple Plugin (Auto-setup)
+
+For plugins that work with default settings using `opts`:
+
+```lua
+return {
+  "author/plugin-name",
+  opts = {
+    -- Plugin options here
+    -- Equivalent to require("plugin-name").setup({ ... })
+  },
+}
+```
+
+### Plugin with Configuration Function
+
+For plugins requiring custom setup logic:
+
+```lua
+return {
+  "author/plugin-name",
+  config = function()
+    local plugin = require("plugin-name")
+    
+    plugin.setup({
+      -- Configuration options
+    })
+    
+    -- Additional setup code
+    -- Set keymaps, autocommands, etc.
+  end,
+}
+```
+
+### Plugin with Dependencies
+
+For plugins that require other plugins:
+
+```lua
+return {
+  "nvim-telescope/telescope.nvim",
+  branch = "0.1.x",
+  dependencies = {
+    "nvim-lua/plenary.nvim",
+    { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+    "nvim-tree/nvim-web-devicons",
+  },
+  config = function()
+    require("telescope").setup({})
+  end,
+}
+```
+
+### Plugin with Keybindings (Lazy-loaded)
+
+For plugins that should load when specific keys are pressed:
+
+```lua
+return {
+  "nvim-tree/nvim-tree.lua",
+  dependencies = "nvim-tree/nvim-web-devicons",
+  keys = {
+    { "<leader>e", "<cmd>NvimTreeFindFileToggle<cr>", desc = "Toggle file explorer" },
+  },
+  config = function()
+    require("nvim-tree").setup({})
+  end,
+}
+```
+
+### Plugin with Multiple Keybindings
+
+For complex keybinding setups using a function:
+
+```lua
+return {
+  "ThePrimeagen/harpoon",
+  branch = "harpoon2",
+  keys = function()
+    local keys = {
+      {
+        "<leader>H",
+        function()
+          require("harpoon"):list():add()
+        end,
+        desc = "Harpoon File",
+      },
+      {
+        "<leader>h",
+        function()
+          local harpoon = require("harpoon")
+          harpoon.ui:toggle_quick_menu(harpoon:list())
+        end,
+        desc = "Harpoon Quick Menu",
+      },
+    }
+    return keys
+  end,
+}
+```
+
+### Event-based Loading
+
+For plugins that should load on specific events:
+
+```lua
+return {
+  "stevearc/conform.nvim",
+  event = { "BufReadPre", "BufNewFile" },
+  config = function()
+    require("conform").setup({
+      -- Configuration
+    })
+  end,
+}
+```
+
+## Real Examples from nvim-luffy
+
+### Example 1: Simple Utility Plugins
+
+From `lua/leyland/plugins/init.lua:1-4`:
+
+```lua
+return {
+  "nvim-lua/plenary.nvim", -- lua functions that many plugins use
+  "christoomey/vim-tmux-navigator", -- tmux & split window navigation
+}
+```
+
+### Example 2: Plugin with Configuration
+
+From `lua/leyland/plugins/formatting.lua:1-39`:
+
+```lua
+return {
+  "stevearc/conform.nvim",
+  event = { "BufReadPre", "BufNewFile" },
+  config = function()
+    local conform = require("conform")
+
+    conform.setup({
+      formatters_by_ft = {
+        javascript = { "prettier" },
+        typescript = { "prettier" },
+        lua = { "stylua" },
+        python = { "isort", "black" },
+      },
+      format_on_save = {
+        lsp_fallback = true,
+        async = false,
+        timeout_ms = 3000,
+      },
+    })
+
+    vim.keymap.set({ "n", "v" }, "<leader>mp", function()
+      conform.format({
+        lsp_fallback = true,
+        async = false,
+        timeout_ms = 1000,
+      })
+    end, { desc = "Format file or range (in visual mode)" })
+  end,
+}
+```
+
+### Example 3: Plugin with Keybindings
+
+From `lua/leyland/plugins/nvim-tree.lua:1-7`:
+
+```lua
+return {
+  "nvim-tree/nvim-tree.lua",
+  dependencies = "nvim-tree/nvim-web-devicons",
+  keys = {
+    { "<leader>e", "<cmd>NvimTreeFindFileToggle<cr>", desc = "Toggle file explorer" },
+  },
+  config = function()
+    require("nvim-tree").setup({
+      -- Configuration options
+    })
+  end,
+}
+```
+
+## Managing Plugins
+
+### View Installed Plugins
+
+```vim
+:Lazy
+```
+
+This opens the Lazy.nvim UI showing all installed plugins, their status, and available updates.
+
+### Install/Update Plugins
+
+```vim
+:Lazy sync
+```
+
+Installs missing plugins and updates existing ones.
+
+### Remove a Plugin
+
+Simply delete the plugin file from `lua/leyland/plugins/` or remove the plugin specification from its file, then run `:Lazy clean`.
+
+## Best Practices
+
+<Tip>
+  **Organize by functionality**: Create separate files for different plugin categories (e.g., `lsp.lua`, `ui.lua`, `git.lua`)
+</Tip>
+
+<Tip>
+  **Use lazy-loading**: Leverage `keys`, `event`, `cmd`, and `ft` to load plugins only when needed
+</Tip>
+
+<Tip>
+  **Document your plugins**: Add comments explaining what each plugin does
+</Tip>
+
+<Tip>
+  **Keep keymaps together**: Define keymaps in the plugin's `config` function or `keys` table to keep related code together
+</Tip>
+
+## Common Issues
+
+<Warning>
+  **Plugin not loading**: Make sure the file is in `lua/leyland/plugins/` and returns a valid table
+</Warning>
+
+<Warning>
+  **Dependency errors**: Ensure all dependencies are listed in the `dependencies` field
+</Warning>
+
+<Warning>
+  **Configuration errors**: Check that the plugin name in `require()` matches the plugin's module name (usually the repo name without the author)
+</Warning>
+
+## Next Steps
+
+- [Customize Keybindings](/customization/keybindings)
+- [Configure LSP Servers](/customization/lsp-servers)
+- [Change Colorscheme](/customization/colorscheme)

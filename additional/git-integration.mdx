@@ -1,0 +1,225 @@
+---
+title: Git Integration
+description: Powerful Git workflow tools with Neogit and Diffview
+icon: git-alt
+---
+
+## Overview
+
+nvim-luffy includes two complementary Git plugins that provide a complete Git workflow without leaving Neovim:
+
+- **Neogit**: A Magit-inspired Git interface
+- **Diffview**: Advanced diff and merge conflict viewer
+
+## Neogit
+
+Location: `lua/leyland/plugins/neogit.lua:1`
+
+Neogit is a Git interface inspired by the legendary Emacs Magit, providing a comprehensive Git workflow in a floating window.
+
+### Keybinding
+
+| Key | Action | Description |
+|-----|--------|-------------|
+| `<leader>gg` | Open Neogit (floating) | Opens the Neogit interface in a floating window |
+
+### Dependencies
+
+Neogit integrates with multiple plugins for enhanced functionality:
+
+- **plenary.nvim** (required): Core utilities
+- **diffview.nvim** (optional): Integrated diff viewing
+- **telescope.nvim** (optional): Fuzzy finding in commits
+- **fzf-lua** (optional): Alternative fuzzy finder
+- **mini.pick** (optional): Alternative picker
+- **snacks.nvim** (optional): Enhanced UI components
+
+### Basic Workflow
+
+<Steps>
+  <Step title="Open Neogit">
+    Press `<leader>gg` to open the Neogit floating window
+  </Step>
+  
+  <Step title="Stage Changes">
+    Navigate to unstaged files and press `s` to stage, or `S` to stage all
+  </Step>
+  
+  <Step title="Commit">
+    Press `c` to open the commit menu, then `c` again to write your commit message
+  </Step>
+  
+  <Step title="Push">
+    Press `P` to open the push menu, then `p` to push to the remote
+  </Step>
+</Steps>
+
+### Common Commands
+
+Inside Neogit, use these single-key commands:
+
+<CardGroup cols={2}>
+  <Card title="Staging" icon="list-check">
+    - `s`: Stage file/hunk
+    - `S`: Stage all changes
+    - `u`: Unstage file/hunk
+    - `U`: Unstage all
+  </Card>
+  
+  <Card title="Commits" icon="code-commit">
+    - `c`: Commit menu
+    - `A`: Amend commit
+    - `r`: Reword commit
+    - `f`: Fixup commit
+  </Card>
+  
+  <Card title="Branching" icon="code-branch">
+    - `b`: Branch menu
+    - `l`: Log menu
+    - `z`: Stash menu
+    - `m`: Merge menu
+  </Card>
+  
+  <Card title="Remote" icon="cloud">
+    - `P`: Push menu
+    - `F`: Pull menu
+    - `f`: Fetch menu
+  </Card>
+</CardGroup>
+
+## Diffview
+
+Location: `lua/leyland/plugins/diffview.lua:1`
+
+Diffview provides a beautiful interface for viewing diffs and resolving merge conflicts.
+
+### Keybindings
+
+| Key | Command | Description |
+|-----|---------|-------------|
+| `<leader>dd` | `:DiffviewOpen` | Open diff view for current changes |
+| `<leader>df` | `:DiffviewClose` | Close the diff view |
+| `<leader>ds` | `:DiffviewOpen origin/main...HEAD` | Compare current branch with main |
+
+### Use Cases
+
+<AccordionGroup>
+  <Accordion title="View Working Directory Changes">
+    Press `<leader>dd` to see all unstaged and staged changes in a side-by-side diff view.
+    
+    ```vim
+    :DiffviewOpen
+    ```
+  </Accordion>
+  
+  <Accordion title="Compare Branches">
+    Press `<leader>ds` to compare your current branch against `origin/main`.
+    
+    ```vim
+    :DiffviewOpen origin/main...HEAD
+    ```
+    
+    You can also compare any two branches:
+    ```vim
+    :DiffviewOpen feature-branch...develop
+    ```
+  </Accordion>
+  
+  <Accordion title="View Commit History">
+    Open a file history view:
+    ```vim
+    :DiffviewFileHistory %        " Current file history
+    :DiffviewFileHistory          " All files history
+    ```
+  </Accordion>
+  
+  <Accordion title="Resolve Merge Conflicts">
+    When you have merge conflicts, Diffview provides a 3-way merge interface:
+    
+    ```vim
+    :DiffviewOpen
+    ```
+    
+    Navigate between conflicts and choose which changes to keep.
+  </Accordion>
+</AccordionGroup>
+
+### Navigation in Diffview
+
+While in Diffview:
+
+- `]c` / `[c`: Jump to next/previous change
+- `<tab>` / `<S-tab>`: Cycle through files
+- `gf`: Go to file in new tab
+- `<leader>df`: Close Diffview
+
+## Git Workflow Examples
+
+### Making a Commit
+
+<Steps>
+  <Step title="Check Status">
+    Open Neogit with `<leader>gg` to see what's changed
+  </Step>
+  
+  <Step title="Review Changes">
+    Press `<leader>dd` to view the full diff of your changes
+  </Step>
+  
+  <Step title="Stage and Commit">
+    Return to Neogit, stage your changes with `s`, then commit with `cc`
+  </Step>
+  
+  <Step title="Push">
+    Push your changes with `Pp` (Push menu, then push)
+  </Step>
+</Steps>
+
+### Reviewing a Branch
+
+<Steps>
+  <Step title="Compare with Main">
+    Press `<leader>ds` to see all changes between your branch and main
+  </Step>
+  
+  <Step title="Navigate Changes">
+    Use `<tab>` to move between files and `]c`/`[c]` to jump between changes
+  </Step>
+  
+  <Step title="Close Review">
+    Press `<leader>df` when done reviewing
+  </Step>
+</Steps>
+
+### Handling Merge Conflicts
+
+<Steps>
+  <Step title="Open Diffview">
+    After a merge conflict, run `:DiffviewOpen` to see the 3-way merge
+  </Step>
+  
+  <Step title="Resolve Conflicts">
+    Navigate through conflicts and edit the merged version
+  </Step>
+  
+  <Step title="Mark as Resolved">
+    Close Diffview and stage the resolved files in Neogit
+  </Step>
+  
+  <Step title="Complete Merge">
+    Commit the merge in Neogit
+  </Step>
+</Steps>
+
+## Lazy Loading
+
+Both plugins use smart lazy loading:
+
+- **Neogit**: Loads when pressing `<leader>gg` or running `:Neogit`
+- **Diffview**: Loads when using any Diffview command
+
+This keeps startup time fast while ensuring Git tools are instantly available when needed.
+
+<Tip>
+Neogit and Diffview work seamlessly together. You can open Diffview from within Neogit for detailed diff views, then return to Neogit for staging and commits.
+</Tip>

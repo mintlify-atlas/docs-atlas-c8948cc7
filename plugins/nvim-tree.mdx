@@ -1,0 +1,305 @@
+---
+title: nvim-tree File Explorer
+description: Configuration and usage of nvim-tree for file navigation
+icon: folder-tree
+---
+
+## Overview
+
+[nvim-tree](https://github.com/nvim-tree/nvim-tree.lua) is a file explorer for Neovim written in Lua. It provides a tree-based view of your project's file structure with git integration and customizable keybindings.
+
+## Installation
+
+nvim-tree is configured in `lua/leyland/plugins/nvim-tree.lua`:
+
+```lua {2-3}
+return {
+	"nvim-tree/nvim-tree.lua",
+	dependencies = "nvim-tree/nvim-web-devicons",
+}
+```
+
+The `nvim-web-devicons` dependency provides file type icons in the tree view.
+
+## Main Keybinding
+
+The primary keybinding to toggle the file explorer:
+
+| Keybinding | Command | Description | Source |
+|------------|---------|-------------|--------|
+| `<leader>e` | `:NvimTreeFindFileToggle` | Toggle file explorer on current file | `nvim-tree.lua:5` |
+
+<Accordion title="NvimTreeFindFileToggle Behavior">
+  This command does three things:
+  
+  1. **Opens** the tree if it's closed
+  2. **Closes** the tree if it's already open
+  3. **Finds** the current file in the tree when opening
+  
+  This means when you press `<leader>e`, nvim-tree will open and automatically scroll to show your current file's location in the project structure.
+</Accordion>
+
+## Configuration
+
+### Netrw Disable
+
+```lua {11-12}
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+```
+
+nvim-tree disables Neovim's built-in file explorer (netrw) to avoid conflicts.
+
+### View Settings
+
+```lua {29-33}
+nvimtree.setup({
+	view = {
+		width = 50,
+		relativenumber = true,
+		side = "right",
+	},
+})
+```
+
+<Accordion title="View Configuration Details">
+  **width = 50**
+  
+  Sets the tree window width to 50 columns. This provides enough space to see file names while preserving screen real estate for editing.
+  
+  **relativenumber = true**
+  
+  Enables relative line numbers in the tree view, making it easier to jump to files using count-based motions (e.g., `5j` to go down 5 files).
+  
+  **side = "right"**
+  
+  Opens the file tree on the right side of the screen instead of the default left side. This is a personal preference that can help with certain workflows.
+</Accordion>
+
+### Renderer Settings
+
+```lua {34-46}
+renderer = {
+	indent_markers = {
+		enable = true,
+	},
+	icons = {
+		glyphs = {
+			folder = {
+				arrow_closed = "",
+				arrow_open = "",
+			},
+		},
+	},
+},
+```
+
+<Accordion title="Renderer Configuration Details">
+  **indent_markers.enable = true**
+  
+  Shows visual indent guides in the tree, making it easier to see the directory hierarchy at a glance.
+  
+  **folder.arrow_closed/open**
+  
+  Uses custom arrow glyphs (  and ) to indicate folder state:
+  -  : Closed/collapsed folder
+  -  : Open/expanded folder
+</Accordion>
+
+### Actions
+
+```lua {47-53}
+actions = {
+	open_file = {
+		window_picker = {
+			enable = false,
+		},
+	},
+},
+```
+
+Disables the window picker, so files always open in the most recently used window instead of prompting you to choose.
+
+### Filters
+
+```lua {54-56}
+filters = {
+	custom = { ".DS_Store" },
+},
+```
+
+Hides `.DS_Store` files (macOS system files) from the tree view.
+
+### Git Settings
+
+```lua {57-59}
+git = {
+	ignore = false,
+},
+```
+
+<Note>
+  With `git.ignore = false`, nvim-tree will show files that are in `.gitignore`. By default, nvim-tree hides gitignored files. This setting ensures you can see all files in your project.
+</Note>
+
+## Custom Keybindings
+
+nvim-tree uses custom keybindings when the tree is focused:
+
+### Navigation and File Operations
+
+```lua {23-24}
+vim.keymap.set("n", "l", api.node.open.edit, opts("Open"))
+vim.keymap.set("n", "h", api.node.navigate.parent_close, opts("Close Directory"))
+```
+
+| Key | Action | Description | Source |
+|-----|--------|-------------|--------|
+| `l` | Open file/folder | Open file in editor or expand folder | `nvim-tree.lua:23` |
+| `h` | Close directory | Collapse folder or move to parent | `nvim-tree.lua:24` |
+
+<Accordion title="Why l and h?">
+  These custom bindings provide a more intuitive navigation experience:
+  
+  - `h` (left in Vim) = go up/close (collapse folders)
+  - `l` (right in Vim) = go down/open (expand folders or open files)
+  
+  This matches the mental model of moving left to go "up" the tree hierarchy and right to go "down" into folders.
+</Accordion>
+
+### Default Keybindings
+
+In addition to the custom bindings, nvim-tree loads all default keybindings:
+
+```lua {20}
+api.config.mappings.default_on_attach(bufnr)
+```
+
+Some useful default bindings include:
+
+| Key | Action |
+|-----|--------|
+| `<CR>` | Open file or expand/collapse folder |
+| `o` | Open file |
+| `<C-v>` | Open file in vertical split |
+| `<C-x>` | Open file in horizontal split |
+| `<C-t>` | Open file in new tab |
+| `a` | Create new file/directory |
+| `d` | Delete file |
+| `r` | Rename file |
+| `x` | Cut file |
+| `c` | Copy file |
+| `p` | Paste file |
+| `R` | Refresh tree |
+| `q` | Close tree |
+| `g?` | Show help |
+
+<Tip>
+  Press `g?` when the tree is focused to see all available keybindings.
+</Tip>
+
+## Usage Examples
+
+### Opening the Tree
+
+1. Press `<leader>e` to toggle the file explorer
+2. The tree opens on the right side with your current file highlighted
+3. Use `h` and `l` to navigate the tree structure
+
+### Creating Files and Directories
+
+1. Press `a` (add) when focused on the tree
+2. Type the file/directory name
+3. Add a trailing `/` to create a directory (e.g., `new-folder/`)
+4. Press `<CR>` to confirm
+
+### Managing Files
+
+<Accordion title="Renaming">
+  1. Navigate to the file
+  2. Press `r`
+  3. Edit the name
+  4. Press `<CR>` to confirm
+</Accordion>
+
+<Accordion title="Deleting">
+  1. Navigate to the file
+  2. Press `d`
+  3. Confirm the deletion
+</Accordion>
+
+<Accordion title="Copying/Moving">
+  1. Navigate to the file
+  2. Press `c` to copy or `x` to cut
+  3. Navigate to destination
+  4. Press `p` to paste
+</Accordion>
+
+### Opening Files in Different Windows
+
+| Action | Keybinding |
+|--------|------------|
+| Open in current window | `l` or `<CR>` |
+| Open in vertical split | `<C-v>` |
+| Open in horizontal split | `<C-x>` |
+| Open in new tab | `<C-t>` |
+
+## Git Integration
+
+nvim-tree shows git status indicators next to files:
+
+| Icon | Status |
+|------|--------|
+| ✗ | Deleted |
+| ✚ | Staged |
+| ✹ | Modified |
+| ★ | Renamed |
+| ═ | Unmerged |
+| ? | Untracked |
+
+<Note>
+  Git status indicators update automatically when you make changes or perform git operations.
+</Note>
+
+## Tips and Tricks
+
+<Accordion title="Quick File Creation">
+  To quickly create nested files:
+  
+  1. Press `a` in the tree
+  2. Type the full path: `src/components/Button.tsx`
+  3. nvim-tree automatically creates missing directories
+</Accordion>
+
+<Accordion title="Filtering Files">
+  - Press `f` to filter files by pattern
+  - Press `F` to clear the filter
+  - Use `.` prefix to show/hide hidden files (press `H`)
+</Accordion>
+
+<Accordion title="Bookmarking">
+  - Press `m` to bookmark a file
+  - Press `bd` to delete a bookmark
+  - Bookmarks appear with a special icon
+</Accordion>
+
+## Performance
+
+nvim-tree is optimized for large projects:
+
+- Lazy loads directory contents
+- Only renders visible nodes
+- Caches file system information
+- Respects `.gitignore` for filtering (when `git.ignore = true`)
+
+## Related Pages
+
+<CardGroup cols={2}>
+  <Card title="Telescope" icon="magnifying-glass" href="/plugins/telescope">
+    Fuzzy finding alternative to browsing
+  </Card>
+  
+  <Card title="Harpoon" icon="bookmark" href="/plugins/harpoon">
+    Quick file navigation for frequently used files
+  </Card>
+</CardGroup>

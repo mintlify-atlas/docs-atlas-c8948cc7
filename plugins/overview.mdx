@@ -1,0 +1,106 @@
+---
+title: Plugin System Overview
+description: Overview of nvim-luffy's plugin architecture and management
+icon: puzzle-piece
+---
+
+## Plugin Management
+
+nvim-luffy uses [Lazy.nvim](https://github.com/folke/lazy.nvim) as its plugin manager. Lazy.nvim is a modern, fast, and feature-rich plugin manager that provides:
+
+- Automatic lazy-loading of plugins
+- Easy plugin configuration
+- Built-in update checker
+- Performance optimization
+- Clean plugin specifications
+
+<Note>
+  All plugins are configured as Lua modules in the `lua/leyland/plugins/` directory for easy organization and maintenance.
+</Note>
+
+## Core Plugins
+
+The configuration includes several essential plugins that enhance Neovim's functionality:
+
+<CardGroup cols={2}>
+  <Card title="Lazy.nvim" icon="box" href="/plugins/lazy-nvim">
+    Modern plugin manager with lazy-loading and auto-updates
+  </Card>
+  
+  <Card title="Telescope" icon="magnifying-glass" href="/plugins/telescope">
+    Fuzzy finder for files, text, and more
+  </Card>
+  
+  <Card title="nvim-tree" icon="folder-tree" href="/plugins/nvim-tree">
+    File explorer with tree structure
+  </Card>
+  
+  <Card title="Harpoon" icon="bookmark" href="/plugins/harpoon">
+    Quick file navigation and project management
+  </Card>
+</CardGroup>
+
+## Additional Plugins
+
+Beyond the core plugins, nvim-luffy includes:
+
+### Development Tools
+
+| Plugin | Purpose |
+|--------|--------|
+| **Treesitter** | Syntax highlighting and code parsing |
+| **nvim-cmp** | Autocompletion engine |
+| **Autopairs** | Automatic bracket pairing |
+| **Flash** | Enhanced search and navigation |
+
+### Git Integration
+
+| Plugin | Purpose |
+|--------|--------|
+| **Neogit** | Magit-like Git interface |
+| **Diffview** | Git diff and merge tool |
+
+### UI & Visuals
+
+| Plugin | Purpose |
+|--------|--------|
+| **Alpha** | Customizable dashboard |
+| **Snacks** | UI enhancements |
+| **Trouble** | Diagnostics and quickfix list |
+
+### LSP & Formatting
+
+| Plugin | Purpose |
+|--------|--------|
+| **LSP plugins** | Language server protocol support |
+| **Formatting** | Code formatting with conform.nvim |
+
+## Plugin Organization
+
+Plugins are organized into two main import paths:
+
+```lua
+{ import = "leyland.plugins" }       -- Core plugins
+{ import = "leyland.plugins.lsp" }   -- LSP-specific plugins
+```
+
+Each plugin is defined in its own Lua file, making it easy to:
+- Enable/disable plugins by removing/adding files
+- Customize individual plugin configurations
+- Keep the codebase organized and maintainable
+
+<Tip>
+  To add a new plugin, create a new `.lua` file in `lua/leyland/plugins/` that returns a Lazy.nvim plugin specification.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Configure Lazy.nvim" icon="gear" href="/plugins/lazy-nvim">
+    Learn about plugin manager settings
+  </Card>
+  
+  <Card title="Telescope Setup" icon="magnifying-glass" href="/plugins/telescope">
+    Master fuzzy finding and search
+  </Card>
+</CardGroup>

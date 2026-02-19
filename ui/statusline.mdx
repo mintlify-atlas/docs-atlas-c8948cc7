@@ -1,0 +1,147 @@
+---
+title: 'Statusline & Winbar'
+description: 'Minimalist statusline configuration with winbar for file information'
+icon: 'window-restore'
+---
+
+nvim-luffy uses a minimalist approach to the statusline by disabling traditional statuslines and moving essential information to the winbar.
+
+## Minimalist Philosophy
+
+The configuration embraces a clean, distraction-free interface:
+
+- **No traditional statusline**: `laststatus = 0`
+- **No command line height**: `cmdheight = 0`
+- **Winbar only**: Essential file information in the window bar
+
+## Winbar Configuration
+
+The winbar displays file and cursor information in a compact format:
+
+**File:** `~/workspace/source/lua/leyland/core/options.lua:6`
+
+```lua lua/leyland/core/options.lua
+opt.laststatus = 0  -- Hide the statusline
+opt.cmdheight = 0   -- Hide command line
+opt.winbar = "%f %h%m%r%=%l,%c %P"
+```
+
+## Winbar Format Breakdown
+
+The winbar format string `"%f %h%m%r%=%l,%c %P"` displays:
+
+<Accordion title="Format Specifiers">
+  | Specifier | Description | Example |
+  |-----------|-------------|---------|
+  | `%f` | Relative file path | `lua/config.lua` |
+  | `%h` | Help buffer flag | `[Help]` (if help file) |
+  | `%m` | Modified flag | `[+]` (if modified) |
+  | `%r` | Read-only flag | `[RO]` (if read-only) |
+  | `%=` | Separation point (right-align) | - |
+  | `%l` | Current line number | `42` |
+  | `%c` | Current column number | `15` |
+  | `%P` | Percentage through file | `50%` |
+</Accordion>
+
+### Example Display
+
+```
+lua/leyland/plugins/colorscheme.lua [+]                    37,15 45%
+```
+
+This shows:
+- File: `lua/leyland/plugins/colorscheme.lua`
+- Modified: `[+]`
+- Cursor position: Line 37, Column 15
+- Progress: 45% through the file
+
+## Configuration Details
+
+### Hidden Statusline
+
+```lua
+opt.laststatus = 0
+```
+
+Completely hides the traditional statusline at the bottom of Neovim. Instead of a persistent bar, the winbar provides per-window information.
+
+**Options:**
+- `0`: Never show statusline
+- `1`: Show only if multiple windows
+- `2`: Always show statusline (default)
+- `3`: Global statusline
+
+### No Command Line Height
+
+```lua
+opt.cmdheight = 0
+```
+
+Removes the command line area at the bottom, maximizing screen space. Commands and messages appear in a floating window when needed.
+
+<Warning>
+  With `cmdheight = 0`, some messages may be harder to read as they appear briefly in a floating window. This is a trade-off for a cleaner interface.
+</Warning>
+
+## Benefits of This Approach
+
+<CardGroup cols={2}>
+  <Card title="More Screen Space" icon="maximize">
+    Removing the statusline and command line gives you more vertical space for code.
+  </Card>
+  
+  <Card title="Reduced Clutter" icon="broom">
+    A minimalist interface reduces visual noise and helps you focus on your code.
+  </Card>
+  
+  <Card title="Per-Window Info" icon="window-restore">
+    Winbar shows information specific to each window, not just the active one.
+  </Card>
+  
+  <Card title="Essential Only" icon="filter">
+    Display only the most critical information: file path, status flags, and cursor position.
+  </Card>
+</CardGroup>
+
+## Customizing the Winbar
+
+To modify what information appears in the winbar, edit the format string in `options.lua`:
+
+```lua
+-- Add file type
+opt.winbar = "%f [%Y] %h%m%r%=%l,%c %P"
+
+-- Show full path instead of relative
+opt.winbar = "%F %h%m%r%=%l,%c %P"
+
+-- Add buffer number
+opt.winbar = "[%n] %f %h%m%r%=%l,%c %P"
+```
+
+### Common Format Specifiers
+
+- `%F`: Full file path
+- `%t`: File name only (tail)
+- `%Y`: File type
+- `%n`: Buffer number
+- `%L`: Total lines in file
+
+<Note>
+  For a complete list of statusline format specifiers, see `:help statusline` in Neovim.
+</Note>
+
+## Disabling the Winbar
+
+If you prefer no information bar at all:
+
+```lua
+opt.winbar = ""
+```
+
+Or to re-enable the traditional statusline:
+
+```lua
+opt.laststatus = 2  -- Always show
+opt.cmdheight = 1   -- One line for commands
+opt.winbar = ""     -- Disable winbar
+```

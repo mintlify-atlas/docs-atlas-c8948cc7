@@ -1,0 +1,309 @@
+---
+title: Trouble
+description: Beautiful diagnostics, references, and quickfix list viewer
+icon: triangle-exclamation
+---
+
+## Overview
+
+Trouble is a powerful diagnostics viewer that provides a clean, organized interface for viewing LSP diagnostics, references, quickfix lists, and more. It aggregates all issues in your workspace into a single, easy-to-navigate panel.
+
+Location: `lua/leyland/plugins/trouble.lua:1`
+
+## Keybindings
+
+| Key | Command | Description |
+|-----|---------|-------------|
+| `<leader>xx` | `:Trouble diagnostics toggle` | Toggle Trouble diagnostics panel |
+
+## Features
+
+Trouble provides a unified interface for:
+
+<CardGroup cols={2}>
+  <Card title="Diagnostics" icon="stethoscope">
+    View all LSP errors, warnings, hints, and info messages across your entire workspace
+  </Card>
+  
+  <Card title="References" icon="link">
+    See all references to a symbol in one organized list
+  </Card>
+  
+  <Card title="Quickfix" icon="list">
+    Browse quickfix and location lists with better formatting
+  </Card>
+  
+  <Card title="Document Symbols" icon="file-code">
+    Outline view of all symbols in the current document
+  </Card>
+</CardGroup>
+
+## Usage
+
+### Opening Trouble
+
+Press `<leader>xx` to toggle the Trouble diagnostics panel. The panel shows all diagnostics in your workspace, organized by file.
+
+### Basic Navigation
+
+While in the Trouble window:
+
+| Key | Action |
+|-----|--------|
+| `<CR>` | Jump to diagnostic location |
+| `o` | Jump and close Trouble |
+| `q` | Close Trouble window |
+| `k` / `j` | Navigate up/down |
+| `[[` / `]]` | Previous/next file |
+
+### Diagnostic Severity
+
+Trouble categorizes diagnostics by severity with visual indicators:
+
+- **Error**: Critical issues that prevent code from working
+- **Warning**: Potential problems that should be addressed
+- **Info**: Informational messages
+- **Hint**: Suggestions for improvement
+
+## Use Cases
+
+<AccordionGroup>
+  <Accordion title="Fix All Errors in Workspace">
+    <Steps>
+      <Step title="Open Trouble">
+        Press `<leader>xx` to see all diagnostics
+      </Step>
+      
+      <Step title="Navigate to First Error">
+        Move to the first error and press `<CR>` to jump to it
+      </Step>
+      
+      <Step title="Fix and Continue">
+        Fix the error, then return to Trouble to continue with the next one
+      </Step>
+      
+      <Step title="Track Progress">
+        Watch the error count decrease as you fix issues
+      </Step>
+    </Steps>
+  </Accordion>
+  
+  <Accordion title="Review File Issues">
+    Trouble groups diagnostics by file, making it easy to:
+    
+    - See which files have the most issues
+    - Focus on one file at a time
+    - Get an overview of code quality across the project
+  </Accordion>
+  
+  <Accordion title="Quick Issue Assessment">
+    Before committing code:
+    
+    1. Open Trouble with `<leader>xx`
+    2. Check if there are any errors
+    3. Review warnings and decide which to address
+    4. Close with `q` when satisfied
+  </Accordion>
+  
+  <Accordion title="Find All References">
+    When using LSP's "Find References":
+    
+    ```vim
+    :Trouble lsp_references
+    ```
+    
+    Shows all references in a clean list instead of the quickfix window.
+  </Accordion>
+</AccordionGroup>
+
+## Commands
+
+While `<leader>xx` opens workspace diagnostics, Trouble supports many other modes:
+
+```vim
+:Trouble diagnostics toggle          " Toggle workspace diagnostics (same as <leader>xx)
+:Trouble diagnostics toggle filter.buf=0  " Toggle current buffer diagnostics only
+:Trouble symbols toggle              " Toggle document symbols (outline)
+:Trouble lsp_references              " Show LSP references
+:Trouble lsp_definitions             " Show LSP definitions
+:Trouble lsp_type_definitions        " Show type definitions
+:Trouble quickfix                    " Show quickfix list
+:Trouble loclist                     " Show location list
+```
+
+## Workflow Integration
+
+### With LSP
+
+Trouble works seamlessly with LSP diagnostics:
+
+1. LSP reports issues in real-time
+2. Trouble aggregates them across all open files
+3. You can address issues systematically in one place
+
+### With Telescope
+
+Combine Trouble with Telescope for powerful workflows:
+
+```vim
+" Search for references with Telescope
+:Telescope lsp_references
+
+" Send results to Trouble for better viewing
+:Trouble lsp_references
+```
+
+### With Testing
+
+After running tests that populate the quickfix list:
+
+```vim
+:Trouble quickfix
+```
+
+View test failures in a clean, organized format.
+
+## Configuration
+
+Location: `lua/leyland/plugins/trouble.lua:4`
+
+Trouble uses default settings (`opts = {}`), which provide:
+
+- Automatic icon support via nvim-web-devicons
+- Sensible defaults for all views
+- Clean, minimal UI
+
+### Dependencies
+
+```lua
+dependencies = { "nvim-tree/nvim-web-devicons" }
+```
+
+Icons make it easy to identify:
+- File types
+- Diagnostic severity
+- Symbol types (function, variable, class, etc.)
+
+### Lazy Loading
+
+```lua
+keys = {
+  { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Toggle Trouble" },
+}
+```
+
+Trouble only loads when you press `<leader>xx`, keeping startup time fast.
+
+## Tips and Tricks
+
+<AccordionGroup>
+  <Accordion title="Filter by Severity">
+    Focus on errors only:
+    
+    ```vim
+    :Trouble diagnostics filter.severity=vim.diagnostic.severity.ERROR
+    ```
+  </Accordion>
+  
+  <Accordion title="Current Buffer Only">
+    See diagnostics for just the current file:
+    
+    ```vim
+    :Trouble diagnostics toggle filter.buf=0
+    ```
+    
+    This is useful for focusing on the file you're currently editing.
+  </Accordion>
+  
+  <Accordion title="Document Outline">
+    Use Trouble as a document outline viewer:
+    
+    ```vim
+    :Trouble symbols toggle
+    ```
+    
+    This shows all functions, classes, variables, etc. in the current file.
+  </Accordion>
+  
+  <Accordion title="Keep Trouble Open">
+    Keep Trouble open in a split while you work:
+    
+    1. Open Trouble with `<leader>xx`
+    2. Navigate to diagnostics with `<CR>` (doesn't close Trouble)
+    3. Fix issues while seeing the list update in real-time
+  </Accordion>
+  
+  <Accordion title="Combine with Git">
+    After making changes, check if you introduced new issues:
+    
+    1. Make code changes
+    2. Open Trouble to see new diagnostics
+    3. Fix before committing
+  </Accordion>
+</AccordionGroup>
+
+## Comparison to Quickfix
+
+<CardGroup cols={2}>
+  <Card title="Better Organization" icon="table">
+    Trouble groups items by file and severity, while quickfix is a flat list
+  </Card>
+  
+  <Card title="Visual Indicators" icon="icons">
+    Icons and colors make it easier to scan for specific issue types
+  </Card>
+  
+  <Card title="Multiple Sources" icon="layer-group">
+    View diagnostics, references, and symbols in the same interface
+  </Card>
+  
+  <Card title="Modern UI" icon="window">
+    Clean, modern interface vs. traditional Vim quickfix window
+  </Card>
+</CardGroup>
+
+<Tip>
+Trouble doesn't replace the quickfix list - it enhances it. You can still use `:copen` for traditional quickfix, or use Trouble for a better viewing experience.
+</Tip>
+
+## Integration with Development Workflow
+
+### Pre-Commit Checks
+
+<Steps>
+  <Step title="Check Issues">
+    Press `<leader>xx` to see all workspace diagnostics
+  </Step>
+  
+  <Step title="Fix Critical Errors">
+    Address all errors (red indicators)
+  </Step>
+  
+  <Step title="Review Warnings">
+    Decide which warnings to fix before committing
+  </Step>
+  
+  <Step title="Commit">
+    Close Trouble with `q` and commit clean code
+  </Step>
+</Steps>
+
+### Code Review
+
+<Steps>
+  <Step title="Open Changed Files">
+    Open files from your Git changes
+  </Step>
+  
+  <Step title="Check Diagnostics">
+    Use Trouble to see if there are new issues
+  </Step>
+  
+  <Step title="Compare Before/After">
+    Verify your changes didn't introduce new problems
+  </Step>
+</Steps>
+
+<Tip>
+Combine Trouble with Neogit and Diffview for a complete code review workflow entirely within Neovim.
+</Tip>

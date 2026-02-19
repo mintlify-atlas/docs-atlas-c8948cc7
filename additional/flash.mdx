@@ -1,0 +1,269 @@
+---
+title: Flash
+description: Lightning-fast navigation and text selection with Flash.nvim
+icon: bolt
+---
+
+## Overview
+
+Flash is a modern navigation plugin that lets you jump to any visible location on screen with just a few keystrokes. It's faster and more intuitive than traditional search-based navigation.
+
+Location: `lua/leyland/plugins/flash.lua:1`
+
+## Keybindings
+
+### Core Navigation
+
+| Key | Mode | Action | Description |
+|-----|------|--------|-------------|
+| `s` | Normal, Visual, Operator | Flash jump | Jump to any visible location |
+| `S` | Normal, Visual, Operator | Flash Treesitter | Jump to Treesitter nodes |
+| `r` | Operator | Remote Flash | Remote operation |
+| `R` | Visual, Operator | Treesitter Search | Search Treesitter nodes |
+| `<C-s>` | Command | Toggle Flash | Toggle Flash in search |
+
+### Incremental Selection
+
+| Key | Mode | Action | Description |
+|-----|------|--------|-------------|
+| `<C-space>` | Normal, Visual, Operator | Treesitter Selection | Start incremental selection |
+| `<C-space>` | (while selecting) | Next | Expand to next node |
+| `<BS>` | (while selecting) | Previous | Contract to previous node |
+
+## Usage
+
+### Basic Navigation
+
+<Steps>
+  <Step title="Trigger Flash">
+    Press `s` in normal mode to activate Flash
+  </Step>
+  
+  <Step title="Type Target">
+    Type one or two characters of your target location
+  </Step>
+  
+  <Step title="Jump">
+    Labels appear on screen - type the label to jump instantly
+  </Step>
+</Steps>
+
+<Tip>
+Flash is context-aware: it shows labels based on what you type, making it faster than counting lines or using relative numbers.
+</Tip>
+
+### Treesitter Navigation
+
+Press `S` to jump to semantic code elements:
+
+<CodeGroup>
+```lua Example: Jump to Function
+-- Press 'S' in normal mode
+-- Flash highlights all function nodes
+-- Type label to jump to any function definition
+
+function calculateTotal(items) -- You can jump here
+  return items.reduce((sum, item) => sum + item.price, 0)
+end
+
+function processOrder(order) -- Or here
+  local total = calculateTotal(order.items)
+  return total
+end
+```
+
+```javascript Example: Jump to JSX Element
+// Press 'S' to see all JSX elements highlighted
+// Jump directly to any component
+
+function App() {
+  return (
+    <div>              {/* Jump to div */}
+      <Header />       {/* Jump to Header */}
+      <Main />         {/* Jump to Main */}
+      <Footer />       {/* Jump to Footer */}
+    </div>
+  )
+}
+```
+</CodeGroup>
+
+### Incremental Selection
+
+Press `<C-space>` to start selecting code based on Treesitter syntax:
+
+```lua
+-- Cursor on 'total'
+local total = calculateTotal(order.items)
+
+-- Press <C-space> once: selects 'total'
+-- Press <C-space> again: selects 'calculateTotal(order.items)'
+-- Press <C-space> again: selects entire assignment
+-- Press <BS>: contract selection back
+```
+
+This simulates nvim-treesitter's incremental selection feature.
+
+### Character Navigation
+
+Flash enhances the built-in `f`, `t`, `F`, `T` motions:
+
+```vim
+;    " Repeat last motion forward
+,    " Repeat last motion backward
+```
+
+Configuration at `lua/leyland/plugins/flash.lua:8-15`:
+
+```lua
+modes = {
+  char = {
+    char_actions = function(motion)
+      return {
+        [";"] = "next",
+        [","] = "prev",
+      }
+    end,
+  },
+},
+```
+
+## Usage Patterns
+
+<AccordionGroup>
+  <Accordion title="Quick Line Jump">
+    Instead of using line numbers or `/` search:
+    
+    1. Press `s`
+    2. Type the first letter of your target word
+    3. Type the label that appears
+    
+    This is often faster than `:42` or `/function<CR>`
+  </Accordion>
+  
+  <Accordion title="Visual Selection">
+    Flash works in visual mode:
+    
+    1. Press `v` to enter visual mode
+    2. Press `s` to Flash jump
+    3. Type target location
+    
+    This selects everything from cursor to target.
+  </Accordion>
+  
+  <Accordion title="Operator Pending">
+    Flash integrates with operators like `d`, `c`, `y`:
+    
+    ```vim
+    ds<label>    " Delete from cursor to Flash target
+    cs<label>    " Change from cursor to Flash target
+    ys<label>    " Yank from cursor to Flash target
+    ```
+  </Accordion>
+  
+  <Accordion title="Remote Operations">
+    Press `r` in operator-pending mode for remote operations:
+    
+    ```vim
+    dr<label>    " Delete at remote location (without moving cursor)
+    cr<label>    " Change at remote location
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Advanced Features
+
+### Search Integration
+
+Press `<C-s>` during command-line search (`/` or `?`) to toggle Flash highlighting:
+
+```vim
+/myFunction<C-s>    " Toggle Flash labels on search matches
+```
+
+This lets you jump directly to any search match without pressing `n` repeatedly.
+
+### Treesitter Search
+
+Press `R` in visual or operator-pending mode to search within Treesitter nodes:
+
+```lua
+-- Search only within function bodies
+-- Ignore comments and strings
+```
+
+This provides syntax-aware search that respects code structure.
+
+## Configuration
+
+Location: `lua/leyland/plugins/flash.lua:6-17`
+
+Flash is configured with minimal options, keeping the default behavior while adding custom character navigation.
+
+### VSCode Compatibility
+
+```lua
+vscode = true
+```
+
+Flash is enabled in VSCode Neovim, providing consistent navigation across environments.
+
+### Lazy Loading
+
+```lua
+event = "VeryLazy"
+```
+
+Flash loads after startup to keep initial load time minimal.
+
+## Comparison to Other Navigation
+
+<CardGroup cols={2}>
+  <Card title="vs. EasyMotion/Hop" icon="arrows-left-right">
+    Flash is faster with better Treesitter integration and more intelligent label placement.
+  </Card>
+  
+  <Card title="vs. Search (/)" icon="magnifying-glass">
+    Flash provides immediate visual feedback with labeled targets instead of cycling through matches.
+  </Card>
+  
+  <Card title="vs. Relative Numbers" icon="hashtag">
+    Flash is more intuitive - you type what you see, not what you count.
+  </Card>
+  
+  <Card title="vs. Mouse" icon="computer-mouse">
+    Flash keeps your hands on the keyboard while being just as fast and more precise.
+  </Card>
+</CardGroup>
+
+<Tip>
+Flash is most effective when you know where you want to go visually. For searching unknown locations, traditional `/` search is still useful.
+</Tip>
+
+## Tips and Tricks
+
+<AccordionGroup>
+  <Accordion title="Two-Character Search">
+    Type two characters for more precision:
+    
+    - `s` + `fu` highlights all instances of "fu"
+    - More specific targets = fewer labels to choose from
+  </Accordion>
+  
+  <Accordion title="Label Preference">
+    Flash uses home row keys for labels (a, s, d, f, etc.) for faster typing.
+  </Accordion>
+  
+  <Accordion title="Cross-Window Jumps">
+    Flash works across splits - you can jump to any visible text in any window.
+  </Accordion>
+  
+  <Accordion title="Combine with Operators">
+    Flash shines when combined with Vim operators:
+    
+    - `ds<target>` - delete to target
+    - `cs<target>` - change to target  
+    - `>s<target>` - indent to target
+    - `=s<target>` - format to target
+  </Accordion>
+</AccordionGroup>

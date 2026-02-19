@@ -1,0 +1,186 @@
+---
+title: 'Code Formatting'
+description: 'Conform.nvim configuration for automatic code formatting'
+icon: 'wand-magic-sparkles'
+---
+
+## What is Conform.nvim?
+
+Conform is a lightweight yet powerful formatter plugin that:
+- Runs formatters asynchronously
+- Supports multiple formatters per filetype
+- Provides format-on-save functionality
+- Falls back to LSP formatting when needed
+
+This configuration sets up automatic formatting for multiple languages with sensible defaults.
+
+## Formatters by Language
+
+Each filetype is configured with specific formatters:
+
+### JavaScript/TypeScript Ecosystem
+
+| Filetype | Formatter | Description |
+|----------|-----------|-------------|
+| `javascript` | prettier | JavaScript files |
+| `typescript` | prettier | TypeScript files |
+| `javascriptreact` | prettier | React JSX files |
+| `typescriptreact` | prettier | React TSX files |
+| `svelte` | prettier | Svelte components |
+
+### Web Languages
+
+| Filetype | Formatter | Description |
+|----------|-----------|-------------|
+| `html` | prettier | HTML files |
+| `css` | prettier | CSS stylesheets |
+| `json` | prettier | JSON files |
+| `yaml` | prettier | YAML files |
+| `markdown` | prettier | Markdown documents |
+| `graphql` | prettier | GraphQL schemas |
+| `liquid` | prettier | Liquid templates |
+
+### Other Languages
+
+| Filetype | Formatter(s) | Description |
+|----------|--------------|-------------|
+| `lua` | stylua | Lua files |
+| `python` | isort, black | Python files (import sorting + formatting) |
+
+### Python Formatting
+
+Python files use two formatters in sequence:
+
+<Steps>
+  <Step title="isort - Import Sorting">
+    Sorts and organizes import statements according to PEP 8.
+  </Step>
+  
+  <Step title="black - Code Formatting">
+    Formats code with opinionated, consistent style.
+  </Step>
+</Steps>
+
+```lua
+python = { "isort", "black" }
+```
+
+## Format Keybinding
+
+Manually format files or visual selections:
+
+| Keybinding | Mode | Action | Timeout |
+|------------|------|--------|----------|
+| `<leader>mp` | Normal | Format entire file | 1000ms |
+| `<leader>mp` | Visual | Format visual selection | 1000ms |
+
+```lua
+vim.keymap.set({ "n", "v" }, "<leader>mp", function()
+  conform.format({
+    lsp_fallback = true,
+    async = false,
+    timeout_ms = 1000,
+  })
+end, { desc = "Format file or range (in visual mode)" })
+```
+
+**Key features:**
+- Works in both normal and visual mode
+- Falls back to LSP formatting if no formatter is configured
+- Synchronous formatting with 1-second timeout
+
+## Format on Save
+
+Automatic formatting is enabled for all filetypes with configured formatters:
+
+```lua
+format_on_save = {
+  lsp_fallback = true,
+  async = false,
+  timeout_ms = 3000,
+}
+```
+
+### Format on Save Behavior
+
+| Setting | Value | Description |
+|---------|-------|-------------|
+| `lsp_fallback` | true | Use LSP formatter if Conform formatter unavailable |
+| `async` | false | Format synchronously (blocks save until complete) |
+| `timeout_ms` | 3000 | Maximum time to wait for formatting (3 seconds) |
+
+<Warning>
+  Format on save is **synchronous** with a 3-second timeout. Large files may delay the save operation slightly.
+</Warning>
+
+## How Formatting Works
+
+<Steps>
+  <Step title="Detect Filetype">
+    When you save or trigger formatting, Conform detects the current buffer's filetype.
+  </Step>
+  
+  <Step title="Find Formatters">
+    Conform looks up the configured formatters for that filetype in `formatters_by_ft`.
+  </Step>
+  
+  <Step title="Run Formatters">
+    Each formatter runs in sequence. For Python, `isort` runs first, then `black`.
+  </Step>
+  
+  <Step title="LSP Fallback">
+    If no formatters are configured, Conform falls back to the LSP server's formatting (e.g., `ts_ls` for TypeScript).
+  </Step>
+  
+  <Step title="Apply Changes">
+    The formatted content replaces the buffer content, preserving cursor position when possible.
+  </Step>
+</Steps>
+
+## Configuration Location
+
+The formatting setup is defined in:
+- **File:** `lua/leyland/plugins/formatting.lua`
+- **Formatters:** Lines 8-23
+- **Format on save:** Lines 24-28
+- **Keybinding:** Lines 31-37
+
+## Disabling Format on Save
+
+If you want to disable automatic formatting:
+
+```lua
+format_on_save = false,
+```
+
+You can still use `<leader>mp` to format manually.
+
+## Adding New Formatters
+
+<Steps>
+  <Step title="Install Formatter via Mason">
+    Add the formatter to `mason-tool-installer`'s `ensure_installed` list.
+  </Step>
+  
+  <Step title="Configure Filetype">
+    Add the filetype and formatter to `formatters_by_ft` in the Conform config.
+  </Step>
+  
+  <Step title="Restart Neovim">
+    Restart Neovim to install the formatter and apply the configuration.
+  </Step>
+</Steps>
+
+## Related Pages
+
+<CardGroup cols={3}>
+  <Card title="LSP Overview" icon="code" href="/lsp/overview">
+    LSP keybindings and configuration
+  </Card>
+  <Card title="Mason" icon="toolbox" href="/lsp/mason">
+    LSP server installation
+  </Card>
+  <Card title="Autocompletion" icon="sparkles" href="/lsp/autocompletion">
+    nvim-cmp setup
+  </Card>
+</CardGroup>

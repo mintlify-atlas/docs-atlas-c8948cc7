@@ -1,0 +1,144 @@
+---
+title: 'Alpha Dashboard'
+description: 'One Piece themed startup screen with custom ASCII art and shortcuts'
+icon: 'house'
+---
+
+nvim-luffy features a custom Alpha dashboard with a One Piece themed ASCII art and quick navigation buttons.
+
+## Dashboard Features
+
+The Alpha dashboard appears when you launch Neovim without opening a file. It displays:
+
+- **One Piece ASCII Art**: A custom Luffy-themed ASCII art header
+- **Inspirational Quote**: "Maybe the One Piece was the commits you made along the way."
+- **Quick Action Buttons**: Fast access to common tasks
+
+## Quick Action Buttons
+
+The dashboard provides three main shortcuts:
+
+<CardGroup cols={3}>
+  <Card title="Find File" icon="magnifying-glass">
+    Press `f` to open Telescope file finder
+    
+    ```vim
+    :Telescope find_files
+    ```
+  </Card>
+  
+  <Card title="Recent Files" icon="clock-rotate-left">
+    Press `r` to browse recently opened files
+    
+    ```vim
+    :Telescope oldfiles
+    ```
+  </Card>
+  
+  <Card title="Quit" icon="right-from-bracket">
+    Press `q` to exit Neovim
+    
+    ```vim
+    :qa
+    ```
+  </Card>
+</CardGroup>
+
+## Dashboard Quote
+
+The footer displays a playful One Piece reference:
+
+```
+"Maybe the One Piece was the commits you made along the way."
+```
+
+This quote appears in a dimmed color (Comment highlight group) between the ASCII art and the action buttons.
+
+## Configuration
+
+The Alpha dashboard is configured in `lua/leyland/plugins/alpha.lua`:
+
+**File:** `~/workspace/source/lua/leyland/plugins/alpha.lua`
+
+```lua lua/leyland/plugins/alpha.lua
+return {
+  "goolord/alpha-nvim",
+  event = "VimEnter",
+  config = function()
+    local alpha = require("alpha")
+    local dashboard = require("alpha.themes.dashboard")
+
+    -- Set custom ASCII art header
+    dashboard.section.header.val = {
+      -- One Piece ASCII art (41 lines)
+    }
+
+    -- Set menu buttons
+    dashboard.section.buttons.val = {
+      dashboard.button("f", "  Find file", ":Telescope find_files <CR>"),
+      dashboard.button("r", "  Recent files", ":Telescope oldfiles <CR>"),
+      dashboard.button("q", "  Quit", ":qa<CR>"),
+    }
+
+    -- Set footer with One Piece quote
+    dashboard.section.footer.val = {
+      "",
+      '"Maybe the One Piece was the commits you made along the way."',
+      "",
+    }
+
+    -- Configure layout
+    dashboard.config.layout = {
+      { type = "padding", val = 2 },
+      dashboard.section.header,
+      { type = "padding", val = 2 },
+      dashboard.section.footer,  -- Quote
+      { type = "padding", val = 2 },
+      dashboard.section.buttons,
+      { type = "padding", val = 1 },
+    }
+
+    dashboard.section.footer.opts.hl = "Comment"
+    alpha.setup(dashboard.opts)
+
+    -- Disable folding on alpha buffer
+    vim.cmd([[autocmd FileType alpha setlocal nofoldenable]])
+  end,
+}
+```
+
+## Customization
+
+### Changing the ASCII Art
+
+Edit `dashboard.section.header.val` in `alpha.lua` to replace the One Piece ASCII art with your own design.
+
+### Adding More Buttons
+
+Add new buttons to `dashboard.section.buttons.val`:
+
+```lua
+dashboard.button("e", "  New file", ":ene <BAR> startinsert <CR>")
+```
+
+### Customizing the Quote
+
+Modify `dashboard.section.footer.val` to change the inspirational quote:
+
+```lua
+dashboard.section.footer.val = {
+  "",
+  '"Your custom quote here"',
+  "",
+}
+```
+
+<Note>
+  The dashboard only appears when Neovim is launched without opening a file. Folding is disabled on the Alpha buffer for a cleaner appearance.
+</Note>
+
+## Plugin Information
+
+- **Plugin**: [goolord/alpha-nvim](https://github.com/goolord/alpha-nvim)
+- **Load Event**: VimEnter
+- **Theme**: Custom dashboard based on alpha.themes.dashboard

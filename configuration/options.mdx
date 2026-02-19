@@ -1,0 +1,148 @@
+---
+title: "Options"
+description: "Neovim options and settings configuration"
+---
+
+This page documents all Neovim options configured in nvim-luffy. These settings control the editor's behavior, appearance, and functionality.
+
+## Display Settings
+
+Control how content is displayed in the editor.
+
+| Option | Value | Description |
+|--------|-------|-------------|
+| `relativenumber` | `true` | Show relative line numbers for easier navigation |
+| `number` | `true` | Show absolute line number for current line |
+| `cmdheight` | `0` | Hide the command line area |
+| `laststatus` | `0` | Hide the statusline |
+| `winbar` | `"%f %h%m%r%=%l,%c %P"` | Custom window bar showing file info and position |
+| `wrap` | `false` | Disable line wrapping |
+| `background` | `"dark"` | Use dark background for color schemes |
+| `signcolumn` | `"yes"` | Always show sign column to prevent text shifting |
+
+<Note>
+The `winbar` format string displays:
+- `%f` - File name
+- `%h%m%r` - Help, modified, and readonly flags
+- `%=` - Right align following items
+- `%l,%c` - Line and column number
+- `%P` - Percentage through file
+</Note>
+
+## Tabs & Indentation
+
+Settings for tab behavior and automatic indentation.
+
+```lua
+opt.tabstop = 2
+opt.shiftwidth = 2 -- 2 spaces for indent width
+opt.expandtab = true -- expand tab to spaces
+opt.autoindent = true -- copy indent of current line to new line
+```
+
+<Accordion title="Indentation Details">
+  - **tabstop**: Sets tab width to 2 spaces
+  - **shiftwidth**: Indent/outdent operations use 2 spaces
+  - **expandtab**: Converts tabs to spaces automatically
+  - **autoindent**: New lines inherit indentation from previous line
+  
+  For more information, use `:h autoindent` in Neovim.
+</Accordion>
+
+## Search Settings
+
+Configure how search behaves in the editor.
+
+| Option | Value | Description |
+|--------|-------|-------------|
+| `ignorecase` | `true` | Case insensitive search by default |
+| `smartcase` | `true` | Uses case-sensitive search when pattern contains uppercase |
+
+<Info>
+With `smartcase` enabled:
+- Searching for `foo` matches `foo`, `Foo`, `FOO`
+- Searching for `Foo` only matches `Foo`
+</Info>
+
+## Clipboard Integration
+
+System clipboard integration for seamless copy/paste.
+
+```lua
+opt.clipboard:append("unnamedplus") -- use system clipboard as default register
+```
+
+This allows you to:
+- Yank text in Neovim and paste in other applications
+- Copy text from other applications and paste in Neovim
+
+## Split Windows
+
+Control where new splits appear.
+
+| Option | Value | Description |
+|--------|-------|-------------|
+| `splitright` | `true` | Vertical splits open to the right |
+| `splitbelow` | `true` | Horizontal splits open below |
+
+## Backspace Behavior
+
+```lua
+opt.backspace = "indent,eol,start"
+```
+
+Allows backspace to delete:
+- **indent**: Autoindent
+- **eol**: Line breaks (join lines)
+- **start**: Characters inserted before entering insert mode
+
+## File Management
+
+### Swap Files
+
+```lua
+opt.swapfile = false
+```
+
+<Warning>
+Swap files are disabled. Make sure to save your work frequently, as there's no recovery file if Neovim crashes.
+</Warning>
+
+### Netrw File Explorer
+
+```lua
+vim.cmd("let g:netrw_liststyle = 3")
+```
+
+Sets netrw (built-in file explorer) to tree view style.
+
+## LSP Configuration
+
+```lua
+vim.lsp.set_log_level("error") -- Only show errors, not warnings
+```
+
+Configures the Language Server Protocol to only log error messages, reducing noise in the LSP log.
+
+## Commented Options
+
+These options are available in the config but currently commented out:
+
+```lua
+-- opt.cursorline = true
+-- opt.termguicolors = true
+```
+
+- **cursorline**: Would highlight the current line
+- **termguicolors**: Would enable 24-bit RGB colors in the terminal
+
+<Info>
+To enable these options, uncomment them in `lua/leyland/core/options.lua`
+</Info>
+
+## Source Code
+
+All these options are configured in:
+```
+lua/leyland/core/options.lua
+```

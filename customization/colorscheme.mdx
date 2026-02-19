@@ -1,0 +1,347 @@
+---
+title: Colorscheme
+description: Learn how to change and customize colorschemes in nvim-luffy
+---
+
+## Overview
+
+nvim-luffy comes with multiple colorschemes pre-installed. Colorschemes are managed in `lua/leyland/plugins/colorscheme.lua`, where you can switch between installed themes or add new ones.
+
+## Installed Colorschemes
+
+The following colorschemes are pre-installed (from `lua/leyland/plugins/colorscheme.lua`):
+
+| Colorscheme | Repository | Description |
+|-------------|------------|-------------|
+| **bamboo** (default) | [ribru17/bamboo.nvim](https://github.com/ribru17/bamboo.nvim) | Warm, pleasant colorscheme |
+| **catppuccin** | [catppuccin/nvim](https://github.com/catppuccin/nvim) | Soothing pastel theme |
+| **tokyonight** | [folke/tokyonight.nvim](https://github.com/folke/tokyonight.nvim) | Clean, dark theme |
+| **modus-themes** | [miikanissi/modus-themes.nvim](https://github.com/miikanissi/modus-themes.nvim) | Accessible, high-contrast themes |
+| **onedark** | [navarasu/onedark.nvim](https://github.com/navarasu/onedark.nvim) | Atom's iconic One Dark theme |
+| **rose-pine** | [rose-pine/neovim](https://github.com/rose-pine/neovim) | Soho vibes theme |
+
+## Changing the Colorscheme
+
+<Steps>
+
+### Open the colorscheme configuration
+
+```bash
+nvim lua/leyland/plugins/colorscheme.lua
+```
+
+### Edit the colorscheme setting
+
+Find line 37 in the file (inside the rose-pine config function):
+
+```lua
+config = function()
+  -- Set your default theme here
+  vim.cmd.colorscheme("bamboo")
+end,
+```
+
+Change `"bamboo"` to any of the installed colorschemes:
+
+```lua
+vim.cmd.colorscheme("catppuccin")
+-- or
+vim.cmd.colorscheme("tokyonight")
+-- or
+vim.cmd.colorscheme("rose-pine")
+-- or
+vim.cmd.colorscheme("onedark")
+-- or
+vim.cmd.colorscheme("modus_vivendi") -- dark variant
+-- or
+vim.cmd.colorscheme("modus_operandi") -- light variant
+```
+
+### Restart Neovim
+
+Your new colorscheme will be loaded on next startup.
+
+</Steps>
+
+## Testing Colorschemes
+
+You can test colorschemes without editing files using the command:
+
+```vim
+:colorscheme catppuccin
+```
+
+This change is temporary and will reset when you restart Neovim.
+
+## Current Configuration
+
+From `lua/leyland/plugins/colorscheme.lua:1-40`:
+
+```lua
+-- Install multiple themes
+return {
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    priority = 1000,
+  },
+  {
+    "folke/tokyonight.nvim",
+    priority = 1000,
+  },
+  {
+    "miikanissi/modus-themes.nvim",
+    priority = 1000,
+  },
+  {
+    "ribru17/bamboo.nvim",
+    lazy = false,
+    priority = 1000,
+  },
+  {
+    "navarasu/onedark.nvim",
+    priority = 1000,
+  },
+  {
+    "rose-pine/neovim",
+    name = "rose-pine",
+    priority = 1000,
+    config = function()
+      -- Set your default theme here
+      vim.cmd.colorscheme("bamboo")
+    end,
+  },
+}
+```
+
+## Adding a New Colorscheme
+
+<Steps>
+
+### Find a colorscheme plugin
+
+Browse [awesome-neovim](https://github.com/rockerBOO/awesome-neovim#colorscheme) or search GitHub for Neovim colorschemes.
+
+### Add the plugin to colorscheme.lua
+
+Open the file:
+
+```bash
+nvim lua/leyland/plugins/colorscheme.lua
+```
+
+Add a new entry to the returned table. For example, to add [Gruvbox](https://github.com/ellisonleao/gruvbox.nvim):
+
+```lua
+return {
+  -- ... existing colorschemes ...
+  {
+    "ellisonleao/gruvbox.nvim",
+    priority = 1000,
+  },
+  {
+    "rose-pine/neovim",
+    name = "rose-pine",
+    priority = 1000,
+    config = function()
+      vim.cmd.colorscheme("gruvbox") -- Set as default
+    end,
+  },
+}
+```
+
+### Restart Neovim
+
+The new colorscheme will be installed automatically on next startup, or run:
+
+```vim
+:Lazy sync
+```
+
+### Apply the new colorscheme
+
+Update line 37 to use your new colorscheme:
+
+```lua
+vim.cmd.colorscheme("gruvbox")
+```
+
+</Steps>
+
+## Configuring Colorscheme Options
+
+Some colorschemes support customization. You can configure them using the `config` function or `opts` table.
+
+### Example: Configuring OneDark
+
+From `lua/leyland/plugins/colorscheme.lua:21-30` (currently commented out):
+
+```lua
+{
+  "navarasu/onedark.nvim",
+  priority = 1000,
+  config = function()
+    require("onedark").setup({
+      style = "deep", -- Options: dark, darker, cool, deep, warm, warmer
+    })
+    require("onedark").load()
+  end,
+}
+```
+
+### Example: Configuring Catppuccin
+
+```lua
+{
+  "catppuccin/nvim",
+  name = "catppuccin",
+  priority = 1000,
+  opts = {
+    flavour = "mocha", -- Options: latte, frappe, macchiato, mocha
+    transparent_background = false,
+    integrations = {
+      telescope = true,
+      nvimtree = true,
+      harpoon = true,
+    },
+  },
+}
+```
+
+### Example: Configuring Tokyo Night
+
+```lua
+{
+  "folke/tokyonight.nvim",
+  priority = 1000,
+  opts = {
+    style = "night", -- Options: storm, moon, night, day
+    transparent = false,
+    terminal_colors = true,
+    styles = {
+      comments = { italic = true },
+      keywords = { italic = true },
+    },
+  },
+}
+```
+
+## Understanding Priority
+
+The `priority = 1000` ensures colorscheme plugins load early. Higher priority means earlier loading, which is important for colorschemes since they need to load before other UI plugins.
+
+## Popular Colorschemes to Try
+
+Here are some popular Neovim colorschemes you might want to add:
+
+### Gruvbox
+
+```lua
+{
+  "ellisonleao/gruvbox.nvim",
+  priority = 1000,
+  opts = {
+    contrast = "hard", -- Options: hard, soft, or empty string
+  },
+}
+```
+
+### Nord
+
+```lua
+{
+  "shaunsingh/nord.nvim",
+  priority = 1000,
+}
+```
+
+### Kanagawa
+
+```lua
+{
+  "rebelot/kanagawa.nvim",
+  priority = 1000,
+}
+```
+
+### Nightfox
+
+```lua
+{
+  "EdenEast/nightfox.nvim",
+  priority = 1000,
+  opts = {
+    options = {
+      transparent = false,
+      terminal_colors = true,
+    },
+  },
+}
+```
+
+### Everforest
+
+```lua
+{
+  "neanias/everforest-nvim",
+  priority = 1000,
+  opts = {
+    background = "hard", -- Options: hard, medium, soft
+  },
+}
+```
+
+## Creating a Light/Dark Toggle
+
+You can create a keymap to toggle between light and dark themes:
+
+```lua
+-- Add this to lua/leyland/core/keymaps.lua
+vim.keymap.set("n", "<leader>td", function()
+  if vim.o.background == "dark" then
+    vim.cmd.colorscheme("modus_operandi") -- light theme
+    vim.o.background = "light"
+  else
+    vim.cmd.colorscheme("bamboo") -- dark theme
+    vim.o.background = "dark"
+  end
+end, { desc = "Toggle light/dark theme" })
+```
+
+## Troubleshooting
+
+<Warning>
+  **Colorscheme not found**: Make sure you've run `:Lazy sync` to install the plugin
+</Warning>
+
+<Warning>
+  **Colors look wrong**: Some colorschemes require true color support. Ensure your terminal supports 24-bit color
+</Warning>
+
+<Warning>
+  **Transparent background not working**: Check your terminal emulator settings and ensure the colorscheme supports transparency
+</Warning>
+
+## Best Practices
+
+<Tip>
+  **Keep multiple colorschemes installed**: Having several options lets you switch based on lighting conditions or preference
+</Tip>
+
+<Tip>
+  **Test before committing**: Use `:colorscheme <name>` to test before editing the config file
+</Tip>
+
+<Tip>
+  **Check plugin documentation**: Most colorscheme plugins have extensive customization options in their README
+</Tip>
+
+<Tip>
+  **Match with terminal theme**: For best results, use a terminal colorscheme that complements your Neovim theme
+</Tip>
+
+## Next Steps
+
+- [Adding Plugins](/customization/adding-plugins)
+- [Customize Keybindings](/customization/keybindings)
+- [Configure LSP Servers](/customization/lsp-servers)

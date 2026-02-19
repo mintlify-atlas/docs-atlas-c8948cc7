@@ -1,80 +1,409 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quick Start
+description: Get productive with nvim-luffy in 5 minutes by learning the essential keybindings and workflows
 ---
 
-## Get started in three steps
+# Quick Start Guide
 
-Get your documentation site running locally and make your first customization.
-
-### Step 1: Set up your local environment
-
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 2: Deploy your changes
-
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
-
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
-
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 3: Go live
-
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
-
-<CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
-</CardGroup>
+Welcome aboard! This guide will get you up and running with nvim-luffy in just 5 minutes. We'll cover the essential keybindings and workflows you need to be productive immediately.
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+  **Leader Key**: nvim-luffy uses `Space` as the leader key. When you see `<leader>`, press the Space bar followed by the next key.
 </Note>
+
+## Essential Concepts
+
+Before diving in, understand these core concepts:
+
+- **Leader key (`<Space>`)**: Your primary modifier for custom commands
+- **Normal mode**: Default mode for navigation and commands
+- **Insert mode**: For typing text (press `i` to enter, `Esc` to exit)
+- **Visual mode**: For selecting text (`v` for character, `V` for line)
+
+## First Steps
+
+<Steps>
+  <Step title="Launch Neovim">
+    Open Neovim from your terminal in any directory:
+
+    ```bash
+    # Open Neovim in current directory
+    nvim
+
+    # Or open a specific file
+    nvim filename.js
+
+    # Or open in a specific directory
+    nvim ~/projects/my-app
+    ```
+
+    You'll be greeted with the custom One Piece-themed dashboard showing the Straw Hat Jolly Roger.
+
+    <img src="/images/alpha-dashboard.png" alt="Alpha dashboard" />
+  </Step>
+
+  <Step title="Open the File Explorer">
+    Press `<Space>e` to toggle the file tree on the right side:
+
+    ```
+    <Space>e  - Toggle file explorer
+    ```
+
+    **File Tree Navigation:**
+    - `j` / `k` - Move down/up
+    - `l` - Open file or expand directory
+    - `h` - Close directory
+    - `a` - Create new file/folder
+    - `r` - Rename file
+    - `d` - Delete file
+    - `x` - Cut file
+    - `c` - Copy file
+    - `p` - Paste file
+
+    <Tip>
+      The file explorer is powered by nvim-tree and shows on the right side. It includes git status indicators and custom icons.
+    </Tip>
+  </Step>
+
+  <Step title="Find Files with Telescope">
+    The fastest way to navigate is using Telescope's fuzzy finder.
+
+    Press `<Space><Space>` to open the file finder:
+
+    ```
+    <Space><Space>  - Find files in current directory
+    ```
+
+    <img src="/images/telescope-files.png" alt="Telescope file finder" />
+
+    **Telescope Navigation:**
+    - `<C-j>` / `<C-k>` - Move down/up through results
+    - `<CR>` (Enter) - Open selected file
+    - `<C-q>` - Send results to quickfix list
+    - `<Esc>` - Close Telescope
+
+    **Other Telescope Commands:**
+    ```lua
+    <Space>/   - Live grep (search text in all files)
+    <Space>fr  - Recent files
+    <Space>fc  - Find word under cursor
+    <Space>ft  - Find TODO comments
+    <Space>fk  - Search keybindings
+    ```
+
+    <Note>
+      Telescope uses fuzzy matching, so you don't need to type the exact filename. Try typing "usrdt" to find "user-details.tsx"!
+    </Note>
+  </Step>
+
+  <Step title="Mark Files with Harpoon">
+    Harpoon lets you mark important files and instantly jump between them - perfect for working on multiple related files.
+
+    **Mark a file:**
+    ```
+    <Space>H  - Add current file to Harpoon
+    ```
+
+    **Open Harpoon menu:**
+    ```
+    <Space>h  - Toggle Harpoon quick menu
+    ```
+
+    **Jump to marked files:**
+    ```
+    <Space>1  - Jump to file 1
+    <Space>2  - Jump to file 2
+    <Space>3  - Jump to file 3
+    ... up to <Space>9
+    ```
+
+    <Tip>
+      Harpoon is ideal for marking files you're actively working on. Mark your route file, component, and test file for instant access.
+    </Tip>
+  </Step>
+
+  <Step title="Edit and Navigate Code">
+    Once you have a file open, use these essential navigation shortcuts:
+
+    **Window Management:**
+    ```
+    <Space>|   - Split window vertically
+    <Space>sh  - Split window horizontally
+    <C-h/j/k/l> - Navigate between splits
+    ```
+
+    **Buffer Management:**
+    ```
+    <Space>bd  - Close current buffer
+    <Space>ba  - Close all buffers
+    ```
+
+    **Fast Movement (Flash.nvim):**
+    ```
+    s          - Jump to any location (type 2 chars)
+    S          - Jump to treesitter node
+    <C-Space>  - Incremental treesitter selection
+    ```
+
+    <img src="/images/flash-demo.gif" alt="Flash.nvim in action" />
+  </Step>
+</Steps>
+
+## Working with Code
+
+### LSP Features
+
+nvim-luffy comes with full LSP support. Once you open a file with an LSP server installed, you get:
+
+**Auto-completion:**
+- Just start typing and suggestions appear automatically
+- `<C-j>` / `<C-k>` - Navigate suggestions
+- `<Tab>` - Accept suggestion
+- `<C-Space>` - Manually trigger completion
+- `<C-e>` - Close completion menu
+
+<img src="/images/completion-demo.png" alt="Auto-completion" />
+
+**Code Navigation:**
+```vim
+gd   - Go to definition
+gD   - Go to declaration
+gi   - Go to implementation
+gr   - Show references
+K    - Show hover documentation
+```
+
+**Code Actions:**
+```vim
+<Space>ca  - Code actions (imports, fixes, refactors)
+<Space>rn  - Rename symbol
+```
+
+**Diagnostics:**
+```vim
+]d  - Next diagnostic
+[d  - Previous diagnostic
+<Space>d  - Show line diagnostics
+```
+
+### Search and Replace
+
+**Search in current file:**
+```vim
+/pattern    - Search forward
+?pattern    - Search backward
+n           - Next match
+N           - Previous match
+```
+
+**Search across files:**
+```vim
+<Space>/    - Live grep (search in all files)
+<Space>fc   - Find word under cursor in all files
+```
+
+**Find TODOs and notes:**
+```vim
+<Space>ft   - Find all TODO, FIX, NOTE, HACK, WARN, PERF comments
+```
+
+### Formatting and Linting
+
+**Auto-format on save** is enabled by default for supported file types.
+
+**Manual formatting:**
+```vim
+<Space>f   - Format current buffer
+```
+
+Supported formatters:
+- **Prettier**: JavaScript, TypeScript, JSON, HTML, CSS, Markdown
+- **Stylua**: Lua
+- **Black & isort**: Python
+
+## Typical Workflows
+
+### Workflow 1: Starting a New Feature
+
+<Steps>
+  <Step title="Navigate to your project">
+    ```bash
+    cd ~/projects/my-app
+    nvim
+    ```
+  </Step>
+
+  <Step title="Find the file you need">
+    Press `<Space><Space>` and type the filename (fuzzy matching works!):
+    ```
+    <Space><Space>
+    Type: "usrcmp" → finds "UserComponent.tsx"
+    ```
+  </Step>
+
+  <Step title="Mark important files with Harpoon">
+    As you open related files, mark them:
+    ```
+    <Space>H  (in UserComponent.tsx)
+    <Space>H  (in user.service.ts)
+    <Space>H  (in user.test.ts)
+    ```
+
+    Now jump between them instantly with `<Space>1`, `<Space>2`, `<Space>3`
+  </Step>
+
+  <Step title="Use LSP features while coding">
+    - Let auto-completion help you (`<Tab>` to accept)
+    - Press `K` to see documentation
+    - Use `gd` to jump to definitions
+    - Run `<Space>ca` for quick fixes and imports
+  </Step>
+</Steps>
+
+### Workflow 2: Debugging an Issue
+
+<Steps>
+  <Step title="Search for the error message">
+    ```
+    <Space>/
+    Type: "Cannot read property"
+    ```
+  </Step>
+
+  <Step title="Navigate through matches">
+    Use `<C-j>` / `<C-k>` to browse results, Enter to open
+  </Step>
+
+  <Step title="Check diagnostics">
+    ```
+    ]d / [d  - Jump between errors
+    <Space>d - See detailed error message
+    ```
+  </Step>
+
+  <Step title="Find related code">
+    Place cursor on a function/variable and:
+    ```
+    gr - See all references
+    gi - Go to implementation
+    ```
+  </Step>
+</Steps>
+
+### Workflow 3: Code Review
+
+<Steps>
+  <Step title="Find todos and notes">
+    ```
+    <Space>ft  - See all TODO, FIX, NOTE comments
+    ```
+  </Step>
+
+  <Step title="Check recent files">
+    ```
+    <Space>fr  - Browse recently edited files
+    ```
+  </Step>
+
+  <Step title="Use splits for comparison">
+    ```
+    <Space>|  - Split vertically
+    <C-h/l>   - Jump between splits
+    ```
+  </Step>
+</Steps>
+
+## Cheat Sheet
+
+Here's a quick reference of the most essential keybindings:
+
+<AccordionGroup>
+  <Accordion title="File Navigation" icon="folder">
+    | Key | Action |
+    |-----|--------|
+    | `<Space>e` | Toggle file explorer |
+    | `<Space><Space>` | Fuzzy find files |
+    | `<Space>/` | Search text in files |
+    | `<Space>fr` | Recent files |
+    | `<Space>h` | Harpoon menu |
+    | `<Space>H` | Mark file in Harpoon |
+    | `<Space>1-9` | Jump to Harpoon file 1-9 |
+  </Accordion>
+
+  <Accordion title="LSP & Editing" icon="code">
+    | Key | Action |
+    |-----|--------|
+    | `gd` | Go to definition |
+    | `gr` | Show references |
+    | `K` | Hover documentation |
+    | `<Space>ca` | Code actions |
+    | `<Space>rn` | Rename |
+    | `]d` / `[d` | Next/previous diagnostic |
+    | `<C-Space>` | Trigger completion |
+    | `<Tab>` | Accept completion |
+  </Accordion>
+
+  <Accordion title="Windows & Buffers" icon="window">
+    | Key | Action |
+    |-----|--------|
+    | `<Space>|` | Split vertically |
+    | `<Space>sh` | Split horizontally |
+    | `<C-h/j/k/l>` | Navigate splits |
+    | `<Space>bd` | Close buffer |
+    | `<Space>ba` | Close all buffers |
+  </Accordion>
+
+  <Accordion title="Fast Movement" icon="bolt">
+    | Key | Action |
+    |-----|--------|
+    | `s` + 2 chars | Flash jump |
+    | `S` | Flash treesitter |
+    | `<C-Space>` | Incremental selection |
+  </Accordion>
+</AccordionGroup>
+
+## Tips for Maximum Productivity
+
+<Tip>
+  **Use Harpoon for active files**: Don't navigate the same 3-4 files repeatedly with Telescope. Mark them with Harpoon (`<Space>H`) and jump instantly with `<Space>1-9`.
+</Tip>
+
+<Tip>
+  **Learn Flash.nvim**: Press `s` followed by any 2 characters to jump anywhere on screen. It's faster than using `hjkl` for long distances.
+</Tip>
+
+<Tip>
+  **Leverage LSP**: Use `gd` (go to definition) instead of searching. Let the language server guide you through the codebase.
+</Tip>
+
+<Tip>
+  **Search keybindings**: Forgot a shortcut? Press `<Space>fk` to search all keybindings with Telescope.
+</Tip>
+
+<Warning>
+  If you're coming from VSCode or another IDE, resist the urge to use arrow keys or mouse. Learning Vim motions (`hjkl`, `w`, `b`, `{`, `}`) will make you significantly faster.
+</Warning>
+
+## Next Steps
+
+Now that you know the basics, explore more features:
+
+<CardGroup cols={2}>
+  <Card title="Full Keybindings" icon="keyboard" href="/configuration/keymaps">
+    Complete reference of all shortcuts
+  </Card>
+  
+  <Card title="LSP Configuration" icon="code" href="/lsp/overview">
+    Customize language servers and formatters
+  </Card>
+  
+  <Card title="Plugin Guide" icon="puzzle-piece" href="/plugins/overview">
+    Learn about all included plugins
+  </Card>
+  
+  <Card title="Customization" icon="wrench" href="/customization/adding-plugins">
+    Make nvim-luffy your own
+  </Card>
+</CardGroup>
+
+Happy sailing through your codebase! May your edits be swift and your commits legendary.

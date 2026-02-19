@@ -1,0 +1,341 @@
+---
+title: Harpoon Navigation
+description: Quick file navigation with Harpoon for nvim-luffy
+icon: bookmark
+---
+
+## Overview
+
+[Harpoon](https://github.com/ThePrimeagen/harpoon) (version 2) is a powerful file navigation plugin that lets you mark and quickly jump between your most important files. Think of it as a bookmark system designed for developers who work on multiple files simultaneously.
+
+<Note>
+  This configuration uses Harpoon 2 (branch: harpoon2), which is a complete rewrite with improved performance and API.
+</Note>
+
+## Installation
+
+Harpoon is configured in `lua/leyland/plugins/harpoon.lua`:
+
+```lua {2-3}
+return {
+	"ThePrimeagen/harpoon",
+	branch = "harpoon2",
+}
+```
+
+## Configuration
+
+Harpoon is configured with menu and settings options:
+
+```lua {4-11}
+opts = {
+	menu = {
+		width = vim.api.nvim_win_get_width(0) - 4,
+	},
+	settings = {
+		save_on_toggle = true,
+	},
+},
+```
+
+<Accordion title="Configuration Details">
+  **menu.width**
+  
+  Sets the Harpoon menu width to the current window width minus 4 characters. This ensures the menu is large enough to show file paths without truncation.
+  
+  **settings.save_on_toggle**
+  
+  Automatically saves the Harpoon list when you toggle the menu. This ensures your marked files persist across sessions.
+</Accordion>
+
+## Keybindings
+
+Harpoon provides keybindings for marking files and quick navigation:
+
+### Core Operations
+
+| Keybinding | Action | Description | Source |
+|------------|--------|-------------|--------|
+| `<leader>H` | Add file to Harpoon | Mark the current file | `harpoon.lua:15` |
+| `<leader>h` | Open Harpoon menu | View and manage marked files | `harpoon.lua:22` |
+
+<Accordion title="Marking Files (leader H)">
+  ```lua {15-19}
+  {
+  	"<leader>H",
+  	function()
+  		require("harpoon"):list():add()
+  	end,
+  	desc = "Harpoon File",
+  },
+  ```
+  
+  When you press `<leader>H`, the current file is added to your Harpoon list. You'll see a brief notification confirming the file was marked.
+  
+  **Tip**: Mark 4-9 files that you're actively working on - these become your "working set" for the current task.
+</Accordion>
+
+<Accordion title="Harpoon Menu (leader h)">
+  ```lua {22-28}
+  {
+  	"<leader>h",
+  	function()
+  		local harpoon = require("harpoon")
+  		harpoon.ui:toggle_quick_menu(harpoon:list())
+  	end,
+  	desc = "Harpoon Quick Menu",
+  },
+  ```
+  
+  Press `<leader>h` to open the Harpoon menu, which shows:
+  - All marked files in order
+  - File paths
+  - Current selection
+  
+  From the menu you can:
+  - Navigate with `j`/`k`
+  - Press `<CR>` to jump to a file
+  - Press `dd` to remove a file from the list
+  - Reorder files by moving lines
+</Accordion>
+
+### Quick Jump
+
+| Keybinding | Action | Description | Source |
+|------------|--------|-------------|--------|
+| `<leader>1` | Jump to file 1 | Open the first marked file | `harpoon.lua:31-39` |
+| `<leader>2` | Jump to file 2 | Open the second marked file | `harpoon.lua:31-39` |
+| `<leader>3` | Jump to file 3 | Open the third marked file | `harpoon.lua:31-39` |
+| `<leader>4` | Jump to file 4 | Open the fourth marked file | `harpoon.lua:31-39` |
+| `<leader>5` | Jump to file 5 | Open the fifth marked file | `harpoon.lua:31-39` |
+| `<leader>6` | Jump to file 6 | Open the sixth marked file | `harpoon.lua:31-39` |
+| `<leader>7` | Jump to file 7 | Open the seventh marked file | `harpoon.lua:31-39` |
+| `<leader>8` | Jump to file 8 | Open the eighth marked file | `harpoon.lua:31-39` |
+| `<leader>9` | Jump to file 9 | Open the ninth marked file | `harpoon.lua:31-39` |
+
+<Accordion title="Quick Jump Implementation">
+  ```lua {31-39}
+  for i = 1, 9 do
+  	table.insert(keys, {
+  		"<leader>" .. i,
+  		function()
+  			require("harpoon"):list():select(i)
+  		end,
+  		desc = "Harpoon to File " .. i,
+  	})
+  end
+  ```
+  
+  The configuration automatically generates keybindings for `<leader>1` through `<leader>9`, allowing instant access to your first 9 marked files.
+</Accordion>
+
+## Harpoon Workflow
+
+Harpoon is designed around a specific workflow that maximizes productivity:
+
+### The Workflow
+
+<Steps>
+  <Step title="Mark Your Working Set">
+    As you start working on a feature or bug fix, mark the 4-9 files you'll be editing most frequently:
+    
+    1. Open a file
+    2. Press `<leader>H` to mark it
+    3. Repeat for other important files
+    
+    **Example**: When working on a React component, mark:
+    - The component file
+    - The test file
+    - The styles file
+    - The parent component
+    - The API service
+  </Step>
+  
+  <Step title="Jump Between Files">
+    Use number keys to instantly jump between your marked files:
+    
+    - `<leader>1` - Component file
+    - `<leader>2` - Test file
+    - `<leader>3` - Styles
+    - `<leader>4` - Parent component
+    - `<leader>5` - API service
+    
+    No need to remember file paths or navigate through directories.
+  </Step>
+  
+  <Step title="Manage Your List">
+    As your focus shifts, update your Harpoon list:
+    
+    1. Press `<leader>h` to open the menu
+    2. Remove files you're done with (`dd`)
+    3. Add new files as needed (`<leader>H`)
+    4. Reorder files by moving lines in the menu
+  </Step>
+  
+  <Step title="Start Fresh">
+    When switching to a new task:
+    
+    1. Open the Harpoon menu (`<leader>h`)
+    2. Clear out old files
+    3. Mark your new working set
+    
+    Your marked files persist across Neovim sessions.
+  </Step>
+</Steps>
+
+## Why Use Harpoon?
+
+Harpoon solves a specific problem that other navigation tools don't:
+
+<Accordion title="vs. Telescope">
+  **Telescope** is great for finding files you don't know the location of.
+  
+  **Harpoon** is better when you know exactly which files you're working on and need to jump between them instantly.
+  
+  - Telescope: "Where is that file?" (search-based)
+  - Harpoon: "Jump to file 2" (bookmark-based)
+</Accordion>
+
+<Accordion title="vs. Buffer List">
+  **Buffer list** shows ALL open buffers, which can be 20+ files.
+  
+  **Harpoon** only shows the 4-9 files you care about right now.
+  
+  - Buffer list: Cluttered with every file you've touched
+  - Harpoon: Clean list of your current working set
+</Accordion>
+
+<Accordion title="vs. File Explorer">
+  **File explorer** requires navigating through directories.
+  
+  **Harpoon** provides instant access via number keys.
+  
+  - File explorer: Click through folders (slow)
+  - Harpoon: Press `<leader>2` (instant)
+</Accordion>
+
+## Usage Examples
+
+### Example 1: Feature Development
+
+You're building a new authentication feature:
+
+1. Mark these files:
+   - `src/auth/login.tsx` - Main component
+   - `src/auth/login.test.tsx` - Tests
+   - `src/api/auth.ts` - API calls
+   - `src/types/user.ts` - Type definitions
+
+2. Work on the feature:
+   - `<leader>1` - Edit login component
+   - `<leader>2` - Write tests
+   - `<leader>3` - Update API calls
+   - `<leader>4` - Adjust types
+
+3. Jump between files instantly without searching
+
+### Example 2: Bug Fix
+
+You're fixing a bug in the checkout flow:
+
+1. Mark the relevant files:
+   - `src/checkout/cart.tsx`
+   - `src/checkout/payment.tsx`
+   - `src/utils/pricing.ts`
+   - `src/hooks/useCart.ts`
+
+2. Debug the issue:
+   - `<leader>1` - Check cart component
+   - `<leader>3` - Review pricing logic
+   - `<leader>4` - Examine cart hook
+   - `<leader>2` - Fix payment component
+
+### Example 3: Refactoring
+
+You're refactoring a module:
+
+1. Mark all affected files:
+   - Old implementation
+   - New implementation
+   - Tests
+   - Files that import the module
+
+2. Refactor systematically:
+   - Jump between old and new (`<leader>1`, `<leader>2`)
+   - Update tests (`<leader>3`)
+   - Fix imports (`<leader>4-9`)
+
+## Tips and Best Practices
+
+<Accordion title="Keep Your List Small">
+  - **Ideal**: 4-9 files
+  - **Too few**: Not leveraging Harpoon's power
+  - **Too many**: Defeats the purpose of quick access
+  
+  If you need more than 9 files, consider breaking your task into smaller subtasks.
+</Accordion>
+
+<Accordion title="Order Matters">
+  Arrange files in a logical order:
+  
+  - **By workflow**: Component → Tests → Styles → Types
+  - **By frequency**: Most-used files first
+  - **By hierarchy**: Parent → Child components
+  
+  You can reorder files in the Harpoon menu by moving lines.
+</Accordion>
+
+<Accordion title="Update Regularly">
+  Don't let your Harpoon list get stale:
+  
+  - Remove files when you're done with them
+  - Add new files as your focus shifts
+  - Clear the list when switching to a new task
+  
+  Think of Harpoon as your "currently working on" list, not a permanent bookmark bar.
+</Accordion>
+
+<Accordion title="Combine with Other Tools">
+  Harpoon works best alongside other navigation tools:
+  
+  - Use **Telescope** to find new files
+  - Use **Harpoon** to mark and return to them
+  - Use **nvim-tree** to understand project structure
+  - Use **Harpoon** for quick access to specific files
+</Accordion>
+
+## Harpoon Menu Operations
+
+When the Harpoon menu is open (`<leader>h`):
+
+| Key | Action |
+|-----|--------|
+| `j`/`k` | Navigate up/down |
+| `<CR>` | Jump to selected file |
+| `dd` | Remove file from list |
+| `q` or `<Esc>` | Close menu |
+
+You can also manually edit the menu like a buffer:
+- Move lines to reorder files
+- Delete lines to remove files
+- Changes save automatically
+
+## Persistence
+
+<Note>
+  Harpoon lists persist across Neovim sessions. Your marked files are saved automatically and restored when you reopen Neovim.
+</Note>
+
+Harpoon stores lists per project (based on working directory), so you can have different working sets for different projects.
+
+## Related Pages
+
+<CardGroup cols={2}>
+  <Card title="Telescope" icon="magnifying-glass" href="/plugins/telescope">
+    Fuzzy finding for discovering files
+  </Card>
+  
+  <Card title="nvim-tree" icon="folder-tree" href="/plugins/nvim-tree">
+    File explorer for browsing structure
+  </Card>
+</CardGroup>

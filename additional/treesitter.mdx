@@ -1,0 +1,140 @@
+---
+title: Treesitter
+description: Advanced syntax highlighting and code parsing with Treesitter
+icon: tree
+---
+
+## Overview
+
+Treesitter provides advanced syntax highlighting, code understanding, and incremental parsing for Neovim. It enables faster and more accurate syntax highlighting compared to traditional regex-based methods.
+
+## Configuration
+
+Location: `lua/leyland/plugins/treesitter.lua:1`
+
+### Installed Parsers
+
+The following language parsers are automatically installed and maintained:
+
+<CardGroup cols={3}>
+  <Card title="Web" icon="globe">
+    - JavaScript
+    - TypeScript
+    - TSX
+    - HTML
+    - CSS
+    - Svelte
+  </Card>
+  <Card title="Data & Markup" icon="file-code">
+    - JSON
+    - YAML
+    - Markdown
+    - Markdown Inline
+    - GraphQL
+  </Card>
+  <Card title="Systems & Tools" icon="terminal">
+    - Bash
+    - Lua
+    - Vim
+    - C
+    - Dockerfile
+  </Card>
+</CardGroup>
+
+<CardGroup cols={2}>
+  <Card title="Database" icon="database">
+    - Prisma
+  </Card>
+  <Card title="Config" icon="gear">
+    - Gitignore
+    - Query
+    - Vimdoc
+  </Card>
+</CardGroup>
+
+### Auto-Installation
+
+```lua
+build = ":TSUpdate"
+```
+
+Treesitter parsers are automatically updated when the plugin is installed or updated using the `:TSUpdate` command.
+
+### Language Registration
+
+```lua
+vim.treesitter.language.register("bash", "zsh")
+```
+
+Zsh files are treated as Bash files for syntax highlighting, providing proper highlighting without requiring a separate Zsh parser.
+
+## Usage
+
+### Manual Parser Management
+
+While parsers are auto-installed, you can manually manage them:
+
+```vim
+:TSInstall <language>    " Install a specific parser
+:TSUpdate                " Update all installed parsers
+:TSUninstall <language>  " Remove a parser
+```
+
+### Check Parser Status
+
+```vim
+:TSInstallInfo           " List all available parsers and their status
+```
+
+## Features
+
+<AccordionGroup>
+  <Accordion title="Syntax Highlighting">
+    Treesitter provides semantic syntax highlighting based on the actual structure of your code, not just pattern matching.
+  </Accordion>
+  
+  <Accordion title="Incremental Parsing">
+    Only re-parses changed portions of the file, making it extremely fast even for large files.
+  </Accordion>
+  
+  <Accordion title="Code Understanding">
+    Enables advanced features like:
+    - Smart text objects
+    - Code navigation
+    - Structural search and replace
+    - Better indentation
+  </Accordion>
+</AccordionGroup>
+
+## Lazy Loading
+
+```lua
+event = { "BufReadPre", "BufNewFile" }
+```
+
+Treesitter loads when opening or creating files, ensuring syntax highlighting is available immediately when needed.
+
+## Integration
+
+Treesitter integrates with several other plugins in nvim-luffy:
+
+- **Flash**: Uses Treesitter for smart text object selection
+- **LSP**: Complements LSP with faster syntax highlighting
+- **Telescope**: Enhanced code search with syntax awareness
+
+## Troubleshooting
+
+<Warning>
+If syntax highlighting appears broken after updating Neovim, try running `:TSUpdate` to rebuild all parsers.
+</Warning>
+
+### Common Issues
+
+**Parser compilation fails**
+- Ensure you have a C compiler installed (gcc, clang, or MSVC)
+- Check `:checkhealth nvim-treesitter` for diagnostic information
+
+**Highlighting not working**
+- Verify the parser is installed: `:TSInstallInfo`
+- Check if the filetype is correct: `:set ft?`
+- Try reinstalling: `:TSUninstall <lang>` then `:TSInstall <lang>`

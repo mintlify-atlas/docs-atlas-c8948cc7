@@ -1,0 +1,247 @@
+---
+title: Telescope Fuzzy Finder
+description: Configuration and usage of Telescope.nvim for fuzzy finding
+icon: magnifying-glass
+---
+
+## Overview
+
+[Telescope](https://github.com/nvim-telescope/telescope.nvim) is a highly extendable fuzzy finder over lists. It provides an interactive interface for searching files, text, keymaps, and more.
+
+## Installation
+
+Telescope is configured with several dependencies in `lua/leyland/plugins/telescope.lua`:
+
+```lua {2-9}
+return {
+	"nvim-telescope/telescope.nvim",
+	branch = "0.1.x",
+	dependencies = {
+		"nvim-lua/plenary.nvim",
+		{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+		"nvim-tree/nvim-web-devicons",
+		"folke/todo-comments.nvim",
+	},
+}
+```
+
+<Note>
+  The `telescope-fzf-native` extension requires a C compiler and `make` to build. It significantly improves sorting performance.
+</Note>
+
+## Configuration
+
+Telescope is configured with custom defaults and picker-specific settings:
+
+### Default Settings
+
+```lua {16-25}
+telescope.setup({
+	defaults = {
+		path_display = { "filename_first" },
+		mappings = {
+			i = {
+				["<C-k>"] = actions.move_selection_previous, -- move to prev result
+				["<C-j>"] = actions.move_selection_next, -- move to next result
+				["<C-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
+			},
+		},
+	},
+})
+```
+
+<Accordion title="Configuration Breakdown">
+  **path_display = { "filename_first" }**
+  
+  Displays the filename before the path in results, making it easier to identify files at a glance.
+  
+  **Custom Mappings (Insert Mode)**
+  
+  - `<C-k>`: Move to previous result
+  - `<C-j>`: Move to next result
+  - `<C-q>`: Send selected items to quickfix list and open it
+</Accordion>
+
+### Picker-Specific Settings
+
+```lua {26-30}
+telescope.setup({
+	-- defaults ...
+	pickers = {
+		live_grep = {
+			path_display = { "truncate" },
+		},
+	},
+})
+```
+
+The `live_grep` picker uses truncated paths instead of filename-first to save space when displaying search results across many files.
+
+### Extensions
+
+```lua
+telescope.load_extension("fzf")
+```
+
+The FZF native extension is loaded for improved sorting performance using FZF's algorithm.
+
+## Keybindings
+
+Telescope provides comprehensive keybindings for various search operations:
+
+### File Operations
+
+| Keybinding | Command | Description | Source |
+|------------|---------|-------------|--------|
+| `<leader><leader>` | `:Telescope find_files` | Fuzzy find files in current working directory | `telescope.lua:38` |
+| `<leader>fr` | `:Telescope oldfiles` | Fuzzy find recent files | `telescope.lua:39` |
+
+<Accordion title="File Finding Tips">
+  **Finding Files (`<leader><leader>`)**
+  
+  - Start typing to filter files by name
+  - Use fuzzy matching (e.g., "mdmpl" matches "my_demo_template")
+  - Press `<CR>` to open the selected file
+  
+  **Recent Files (`<leader>fr`)**
+  
+  - Shows your most recently opened files
+  - Sorted by recency
+  - Great for quickly jumping back to files you were working on
+</Accordion>
+
+### Text Search
+
+| Keybinding | Command | Description | Source |
+|------------|---------|-------------|--------|
+| `<leader>/` | `:Telescope live_grep` | Find string in current working directory | `telescope.lua:40` |
+| `<leader>fc` | `:Telescope grep_string` | Find string under cursor in current working directory | `telescope.lua:41` |
+
+<Accordion title="Text Search Tips">
+  **Live Grep (`<leader>/`)**
+  
+  - Type your search query in real-time
+  - Searches across all files in the project
+  - Uses ripgrep for fast searching
+  - Respects `.gitignore` by default
+  
+  **Grep String (`<leader>fc`)**
+  
+  - Automatically searches for the word under the cursor
+  - No need to type the search term
+  - Perfect for finding all occurrences of a variable or function
+</Accordion>
+
+### Special Searches
+
+| Keybinding | Command | Description | Source |
+|------------|---------|-------------|--------|
+| `<leader>ft` | `:TodoTelescope` | Find TODO comments | `telescope.lua:42` |
+| `<leader>fk` | `:Telescope keymaps` | Find configured keymaps | `telescope.lua:43` |
+
+<Accordion title="TODO Comments">
+  The `<leader>ft` keybinding integrates with the `todo-comments.nvim` plugin to find comments like:
+  
+  - `TODO:` - Tasks to be done
+  - `FIXME:` - Known bugs to fix
+  - `HACK:` - Temporary workarounds
+  - `NOTE:` - Important notes
+  - `WARNING:` - Warning messages
+</Accordion>
+
+## Telescope UI Navigation
+
+When Telescope is open, you can navigate results using:
+
+### Built-in Keybindings
+
+| Key | Action |
+|-----|--------|
+| `<C-j>` | Move to next result (custom) |
+| `<C-k>` | Move to previous result (custom) |
+| `<C-n>` | Move to next result (default) |
+| `<C-p>` | Move to previous result (default) |
+| `<CR>` | Open selected file |
+| `<C-x>` | Open in horizontal split |
+| `<C-v>` | Open in vertical split |
+| `<C-t>` | Open in new tab |
+| `<C-q>` | Send to quickfix list (custom) |
+| `<C-u>` | Scroll up in preview |
+| `<C-d>` | Scroll down in preview |
+| `<Esc>` | Close Telescope |
+
+<Note>
+  The custom `<C-j>` and `<C-k>` mappings provide a more intuitive navigation experience consistent with Vim's movement keys.
+</Note>
+
+## Usage Examples
+
+### Finding and Opening Files
+
+1. Press `<leader><leader>` to open file finder
+2. Type part of the filename (e.g., "init")
+3. Use `<C-j>`/`<C-k>` to navigate results
+4. Press `<CR>` to open the selected file
+
+### Searching for Text
+
+1. Press `<leader>/` to open live grep
+2. Type your search term (e.g., "function setup")
+3. Results appear in real-time as you type
+4. Navigate and open files containing the term
+
+### Finding TODO Comments
+
+1. Press `<leader>ft` to search for TODOs
+2. Browse all TODO, FIXME, HACK, NOTE comments
+3. Jump directly to any comment
+
+### Discovering Keybindings
+
+1. Press `<leader>fk` to open keymap finder
+2. Search for any keybinding (e.g., "telescope")
+3. See all available mappings and their descriptions
+
+<Tip>
+  Use `<leader>fk` (find keymaps) when you forget a keybinding - it's like a searchable cheatsheet!
+</Tip>
+
+## Performance Tips
+
+<Accordion title="Large Codebases">
+  For large projects:
+  
+  - The FZF native extension provides faster sorting
+  - Telescope respects `.gitignore` to skip irrelevant files
+  - Use more specific search terms to reduce result count
+  - Consider using `find_files` with file type filters
+</Accordion>
+
+<Accordion title="Optimizing Search">
+  To make searches faster:
+  
+  - Use `grep_string` (`<leader>fc`) instead of typing when searching for the word under cursor
+  - Add directories to `.gitignore` to exclude them from searches
+  - Use file type patterns when you know the target file type
+</Accordion>
+
+## Related Plugins
+
+Telescope integrates with several other plugins:
+
+- **plenary.nvim** - Required dependency providing Lua utilities
+- **telescope-fzf-native** - Native FZF sorter for better performance
+- **nvim-web-devicons** - File icons in Telescope UI
+- **todo-comments** - Special TODO comment highlighting and search
+
+## Related Pages
+
+<CardGroup cols={2}>
+  <Card title="Harpoon" icon="bookmark" href="/plugins/harpoon">
+    Quick file navigation alternative
+  </Card>
+  
+  <Card title="nvim-tree" icon="folder-tree" href="/plugins/nvim-tree">
+    File explorer for browsing project structure
+  </Card>
+</CardGroup>

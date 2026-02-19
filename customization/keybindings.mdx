@@ -1,0 +1,330 @@
+---
+title: Keybindings
+description: Learn how to customize keybindings in nvim-luffy
+---
+
+## Overview
+
+nvim-luffy uses Neovim's built-in `vim.keymap.set()` function to define keybindings. Keymaps can be defined in two places:
+
+1. **Global keymaps**: In `lua/leyland/core/keymaps.lua` for general editor keybindings
+2. **Plugin-specific keymaps**: In plugin configuration files for plugin-related keybindings
+
+## Leader Key
+
+The leader key is set to `<Space>` (defined in `lua/leyland/core/keymaps.lua:1`):
+
+```lua
+vim.g.mapleader = " "
+```
+
+## Keymap Syntax
+
+The basic syntax for setting a keymap is:
+
+```lua
+vim.keymap.set(mode, lhs, rhs, opts)
+```
+
+| Parameter | Description | Example |
+|-----------|-------------|--------|
+| `mode` | Mode(s) where keymap applies | `"n"` (normal), `"i"` (insert), `"v"` (visual), `{"n", "v"}` (multiple) |
+| `lhs` | Key combination to press | `"<leader>ff"`, `"<C-s>"`, `"jk"` |
+| `rhs` | Command to execute or function | `"<cmd>Telescope find_files<cr>"`, `function() ... end` |
+| `opts` | Options table | `{ desc = "Find files", silent = true }` |
+
+### Common Options
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `desc` | string | Description shown in which-key and `:Telescope keymaps` |
+| `silent` | boolean | Don't show command in command line |
+| `noremap` | boolean | Non-recursive mapping (default: true) |
+| `buffer` | number | Buffer-local keymap (buffer number) |
+| `nowait` | boolean | Don't wait for more characters |
+| `expr` | boolean | Evaluate rhs as an expression |
+
+## Adding Global Keybindings
+
+<Steps>
+
+### Open the keymaps file
+
+```bash
+nvim lua/leyland/core/keymaps.lua
+```
+
+### Add your keymap
+
+Add a new line with your keymap definition:
+
+```lua
+vim.keymap.set("n", "<leader>w", "<cmd>w<CR>", { desc = "Save file" })
+```
+
+### Restart Neovim or source the file
+
+The keymap will be available immediately after restarting, or source the file with:
+
+```vim
+:source %
+```
+
+</Steps>
+
+## Existing Global Keybindings
+
+From `lua/leyland/core/keymaps.lua:11-15`:
+
+```lua
+-- Window management
+vim.keymap.set("n", "<leader>|", "<C-w>v", { desc = "Split window vertically" })
+vim.keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" })
+
+-- Buffer management
+vim.keymap.set("n", "<leader>bd", "<cmd>bd<CR>", { desc = "Close buffer" })
+vim.keymap.set("n", "<leader>ba", "<cmd>%bd<CR>", { desc = "Close all buffers" })
+```
+
+## Plugin-Specific Keybindings
+
+Plugin keybindings should be defined in the plugin's configuration file. There are two main approaches:
+
+### Method 1: In the `config` Function
+
+Define keymaps inside the plugin's `config` function. From `lua/leyland/plugins/telescope.lua:36-43`:
+
+```lua
+return {
+  "nvim-telescope/telescope.nvim",
+  config = function()
+    local telescope = require("telescope")
+    telescope.setup({})
+    
+    -- Set keymaps
+    local keymap = vim.keymap
+    keymap.set("n", "<leader><leader>", "<cmd>Telescope find_files<cr>", { desc = "Fuzzy find files in cwd" })
+    keymap.set("n", "<leader>fr", "<cmd>Telescope oldfiles<cr>", { desc = "Fuzzy find recent files" })
+    keymap.set("n", "<leader>/", "<cmd>Telescope live_grep<cr>", { desc = "Find string in cwd" })
+    keymap.set("n", "<leader>fc", "<cmd>Telescope grep_string<cr>", { desc = "Find string under cursor in cwd" })
+    keymap.set("n", "<leader>ft", "<cmd>TodoTelescope<cr>", { desc = "Find todos" })
+    keymap.set("n", "<leader>fk", "<cmd>Telescope keymaps<cr>", { desc = "Find keymaps" })
+  end,
+}
+```
+
+### Method 2: Using the `keys` Property (Lazy-loading)
+
+This method lazy-loads the plugin only when the key is pressed. From `lua/leyland/plugins/nvim-tree.lua:4-6`:
+
+```lua
+return {
+  "nvim-tree/nvim-tree.lua",
+  keys = {
+    { "<leader>e", "<cmd>NvimTreeFindFileToggle<cr>", desc = "Toggle file explorer" },
+  },
+  config = function()
+    -- Plugin configuration
+  end,
+}
+```
+
+### Method 3: Dynamic Keybindings with Function
+
+For complex keybinding logic, use a function. From `lua/leyland/plugins/harpoon.lua:12-41`:
+
+```lua
+return {
+  "ThePrimeagen/harpoon",
+  keys = function()
+    local keys = {
+      {
+        "<leader>H",
+        function()
+          require("harpoon"):list():add()
+        end,
+        desc = "Harpoon File",
+      },
+      {
+        "<leader>h",
+        function()
+          local harpoon = require("harpoon")
+          harpoon.ui:toggle_quick_menu(harpoon:list())
+        end,
+        desc = "Harpoon Quick Menu",
+      },
+    }
+
+    -- Dynamically add numbered keys
+    for i = 1, 9 do
+      table.insert(keys, {
+        "<leader>" .. i,
+        function()
+          require("harpoon"):list():select(i)
+        end,
+        desc = "Harpoon to File " .. i,
+      })
+    end
+    return keys
+  end,
+}
+```
+
+### Method 4: Buffer-Local Keymaps
+
+For keymaps that only apply to specific buffers. From `lua/leyland/plugins/nvim-tree.lua:14-25`:
+
+```lua
+local function on_attach(bufnr)
+  local function opts(desc)
+    return { 
+      desc = "nvim-tree: " .. desc, 
+      buffer = bufnr, 
+      noremap = true, 
+      silent = true, 
+      nowait = true 
+    }
+  end
+
+  -- Default mappings
+  api.config.mappings.default_on_attach(bufnr)
+
+  -- Custom buffer-local mappings
+  vim.keymap.set("n", "l", api.node.open.edit, opts("Open"))
+  vim.keymap.set("n", "h", api.node.navigate.parent_close, opts("Close Directory"))
+end
+```
+
+## Key Notation Reference
+
+| Notation | Description | Example |
+|----------|-------------|--------|
+| `<leader>` | Leader key (Space) | `<leader>ff` = Space + f + f |
+| `<C-x>` | Ctrl + x | `<C-s>` = Ctrl + s |
+| `<A-x>` or `<M-x>` | Alt + x | `<A-j>` = Alt + j |
+| `<S-x>` | Shift + x | `<S-Tab>` = Shift + Tab |
+| `<CR>` | Enter | `<CR>` |
+| `<ESC>` | Escape | `<ESC>` |
+| `<Tab>` | Tab | `<Tab>` |
+| `<Space>` | Space | `<Space>` |
+| `<BS>` | Backspace | `<BS>` |
+
+## Mode Shortcuts
+
+| Mode | Description |
+|------|-------------|
+| `n` | Normal mode |
+| `i` | Insert mode |
+| `v` | Visual mode |
+| `x` | Visual block mode |
+| `t` | Terminal mode |
+| `c` | Command-line mode |
+| `o` | Operator-pending mode |
+
+## Examples
+
+### Simple Command Mapping
+
+```lua
+vim.keymap.set("n", "<leader>w", "<cmd>w<CR>", { desc = "Save file" })
+```
+
+### Multiple Modes
+
+```lua
+vim.keymap.set({"n", "v"}, "<leader>y", '"+y', { desc = "Copy to system clipboard" })
+```
+
+### Function as Command
+
+From `lua/leyland/plugins/formatting.lua:31-37`:
+
+```lua
+vim.keymap.set({ "n", "v" }, "<leader>mp", function()
+  require("conform").format({
+    lsp_fallback = true,
+    async = false,
+    timeout_ms = 1000,
+  })
+end, { desc = "Format file or range (in visual mode)" })
+```
+
+### Remap Existing Keys
+
+```lua
+-- Remap j and k to move by visual lines
+vim.keymap.set("n", "j", "gj", { desc = "Move down by visual line" })
+vim.keymap.set("n", "k", "gk", { desc = "Move up by visual line" })
+```
+
+### Insert Mode Mapping
+
+```lua
+-- Exit insert mode with jk
+vim.keymap.set("i", "jk", "<ESC>", { desc = "Exit insert mode" })
+```
+
+### Terminal Mode Mapping
+
+```lua
+-- Easy terminal escape
+vim.keymap.set("t", "<ESC>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+```
+
+## Finding Existing Keymaps
+
+Use Telescope to search existing keymaps:
+
+```vim
+:Telescope keymaps
+```
+
+Or press `<leader>fk` (from `lua/leyland/plugins/telescope.lua:43`).
+
+## Disabling Default Keymaps
+
+To disable a keymap, set it to `<nop>` (no operation):
+
+```lua
+vim.keymap.set("n", "Q", "<nop>", { desc = "Disable Ex mode" })
+```
+
+## Best Practices
+
+<Tip>
+  **Always add descriptions**: Use the `desc` option for every keymap to make them discoverable
+</Tip>
+
+<Tip>
+  **Use leader key for custom mappings**: Avoid overriding Vim's default keys unless necessary
+</Tip>
+
+<Tip>
+  **Group related keymaps**: Use consistent prefixes (e.g., `<leader>f` for finding, `<leader>g` for git)
+</Tip>
+
+<Tip>
+  **Plugin keymaps in plugin files**: Keep plugin-related keymaps in the plugin configuration for better organization
+</Tip>
+
+<Tip>
+  **Use lazy-loading**: Define keymaps in the `keys` property to lazy-load plugins on first use
+</Tip>
+
+## Common Keymap Patterns in nvim-luffy
+
+| Prefix | Purpose | Example |
+|--------|---------|--------|
+| `<leader><leader>` | Quick file finder | Find files |
+| `<leader>f` | Finding/searching | `<leader>ff`, `<leader>fg` |
+| `<leader>b` | Buffer operations | `<leader>bd`, `<leader>ba` |
+| `<leader>g` | Git operations | Git commands |
+| `<leader>e` | File explorer | Toggle nvim-tree |
+| `<leader>h` | Harpoon | Quick file navigation |
+| `<leader>s` | Split windows | `<leader>sh` |
+
+## Next Steps
+
+- [Adding Plugins](/customization/adding-plugins)
+- [Configure LSP Servers](/customization/lsp-servers)
+- [Change Colorscheme](/customization/colorscheme)

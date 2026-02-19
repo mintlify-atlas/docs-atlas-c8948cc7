@@ -1,0 +1,165 @@
+---
+title: 'Autocompletion'
+description: 'nvim-cmp configuration for intelligent code completion'
+icon: 'sparkles'
+---
+
+## What is nvim-cmp?
+
+`nvim-cmp` is a completion engine that provides:
+- LSP-based completions
+- Snippet expansion
+- Buffer text completion
+- File path completion
+- VS Code-like pictograms
+
+This configuration integrates with LuaSnip for snippets and uses multiple completion sources.
+
+## Completion Sources
+
+Completion suggestions come from these sources (in priority order):
+
+| Source | Plugin | Description |
+|--------|--------|-------------|
+| `nvim_lsp` | cmp-nvim-lsp | Completions from LSP servers |
+| `luasnip` | LuaSnip | Snippet completions |
+| `buffer` | cmp-buffer | Text from current buffer |
+| `path` | cmp-path | File system paths |
+
+```lua
+sources = cmp.config.sources({
+  { name = "nvim_lsp" },
+  { name = "luasnip" },
+  { name = "buffer" },
+  { name = "path" },
+})
+```
+
+## Completion Keybindings
+
+These keybindings are active in insert mode when the completion menu is visible:
+
+### Navigation
+
+| Keybinding | Action | Description |
+|------------|--------|-------------|
+| `<C-k>` | Previous item | Select previous completion suggestion |
+| `<C-j>` | Next item | Select next completion suggestion |
+| `<C-b>` | Scroll docs up | Scroll documentation window up |
+| `<C-f>` | Scroll docs down | Scroll documentation window down |
+
+### Actions
+
+| Keybinding | Action | Description |
+|------------|--------|-------------|
+| `<C-Space>` | Trigger completion | Manually show completion suggestions |
+| `<C-e>` | Close completion | Abort completion and close menu |
+| `<CR>` | Confirm selection | Accept currently selected item |
+| `<Tab>` | Next/Expand snippet | Select next item or expand snippet |
+
+### Tab Behavior
+
+The `<Tab>` key has smart behavior:
+
+<Steps>
+  <Step title="Completion Menu Visible">
+    Selects the next completion item in the menu.
+  </Step>
+  
+  <Step title="Snippet Expandable/Jumpable">
+    Expands the snippet or jumps to the next snippet placeholder.
+  </Step>
+  
+  <Step title="Default Fallback">
+    Inserts a regular tab character.
+  </Step>
+</Steps>
+
+```lua
+["<Tab>"] = cmp.mapping(function(fallback)
+  if cmp.visible() then
+    cmp.select_next_item()
+  elseif luasnip.expand_or_jumpable() then
+    luasnip.expand_or_jump()
+  else
+    fallback()
+  end
+end, { "i", "s" })
+```
+
+## Snippet Integration
+
+### LuaSnip Configuration
+
+- **Engine:** LuaSnip v2.x
+- **Build:** Includes jsregexp for advanced snippet patterns
+- **Snippets:** Loads VS Code-style snippets from `friendly-snippets`
+
+```lua
+snippet = {
+  expand = function(args)
+    luasnip.lsp_expand(args.body)
+  end,
+}
+```
+
+### Snippet Loading
+
+VS Code-style snippets are lazy-loaded on demand:
+
+```lua
+require("luasnip.loaders.from_vscode").lazy_load()
+```
+
+## Completion Menu Formatting
+
+The completion menu uses `lspkind` for VS Code-like pictograms:
+
+```lua
+formatting = {
+  format = lspkind.cmp_format({
+    maxwidth = 50,
+    ellipsis_char = "...",
+  }),
+}
+```
+
+**Features:**
+- Icons for each completion type (function, variable, etc.)
+- Maximum width of 50 characters
+- Long items are truncated with ellipsis
+
+## LSP Capabilities
+
+The LSP capabilities are extended to support nvim-cmp completions:
+
+```lua
+local capabilities = cmp_nvim_lsp.default_capabilities()
+
+vim.lsp.config("*", {
+  capabilities = capabilities,
+})
+```
+
+This tells all LSP servers that Neovim supports advanced completion features.
+
+## Trigger Behavior
+
+Completion is triggered:
+- Automatically while typing (based on LSP server settings)
+- Manually with `<C-Space>`
+- When entering insert mode after specific characters (e.g., `.`, `::`)
+
+## Related Pages
+
+<CardGroup cols={3}>
+  <Card title="LSP Overview" icon="code" href="/lsp/overview">
+    LSP keybindings and configuration
+  </Card>
+  <Card title="Mason" icon="toolbox" href="/lsp/mason">
+    LSP server installation
+  </Card>
+  <Card title="Formatting" icon="wand-magic-sparkles" href="/lsp/formatting">
+    Code formatting with Conform
+  </Card>
+</CardGroup>

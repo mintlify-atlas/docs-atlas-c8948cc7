@@ -1,0 +1,127 @@
+---
+title: 'Colorschemes'
+description: 'Available colorschemes in nvim-luffy and how to switch between them'
+icon: 'palette'
+---
+
+nvim-luffy comes with six pre-installed colorschemes. The default theme is **Bamboo**, providing a warm, tropical aesthetic.
+
+## Available Colorschemes
+
+<Tabs>
+  <Tab title="Bamboo (Default)">
+    **Bamboo** is the default colorscheme for nvim-luffy.
+    
+    ```lua
+    vim.cmd.colorscheme("bamboo")
+    ```
+    
+    - Repository: [ribru17/bamboo.nvim](https://github.com/ribru17/bamboo.nvim)
+    - Style: Warm, tropical colors
+    - Priority: 1000
+  </Tab>
+  
+  <Tab title="Catppuccin">
+    **Catppuccin** is a community-driven pastel theme.
+    
+    ```lua
+    vim.cmd.colorscheme("catppuccin")
+    ```
+    
+    - Repository: [catppuccin/nvim](https://github.com/catppuccin/nvim)
+    - Style: Soothing pastel colors
+    - Priority: 1000
+  </Tab>
+  
+  <Tab title="Tokyo Night">
+    **Tokyo Night** offers a clean, dark theme inspired by Tokyo at night.
+    
+    ```lua
+    vim.cmd.colorscheme("tokyonight")
+    ```
+    
+    - Repository: [folke/tokyonight.nvim](https://github.com/folke/tokyonight.nvim)
+    - Style: Dark with vibrant accents
+    - Priority: 1000
+  </Tab>
+  
+  <Tab title="Modus Themes">
+    **Modus Themes** are highly accessible themes optimized for readability.
+    
+    ```lua
+    vim.cmd.colorscheme("modus")
+    ```
+    
+    - Repository: [miikanissi/modus-themes.nvim](https://github.com/miikanissi/modus-themes.nvim)
+    - Style: High contrast, accessible
+    - Priority: 1000
+  </Tab>
+  
+  <Tab title="OneDark">
+    **OneDark** is inspired by Atom's One Dark theme.
+    
+    ```lua
+    vim.cmd.colorscheme("onedark")
+    ```
+    
+    - Repository: [navarasu/onedark.nvim](https://github.com/navarasu/onedark.nvim)
+    - Style: Classic dark theme
+    - Priority: 1000
+  </Tab>
+  
+  <Tab title="Rose Pine">
+    **Rose Pine** is a natural, low-contrast theme.
+    
+    ```lua
+    vim.cmd.colorscheme("rose-pine")
+    ```
+    
+    - Repository: [rose-pine/neovim](https://github.com/rose-pine/neovim)
+    - Style: Soft, natural colors
+    - Priority: 1000
+  </Tab>
+</Tabs>
+
+## Changing the Colorscheme
+
+To change your default colorscheme, edit the configuration file:
+
+**File:** `~/workspace/source/lua/leyland/plugins/colorscheme.lua:37`
+
+```lua lua/leyland/plugins/colorscheme.lua
+return {
+  -- ... other colorscheme plugins ...
+  {
+    "rose-pine/neovim",
+    name = "rose-pine",
+    priority = 1000,
+    config = function()
+      -- Set your default theme here
+      vim.cmd.colorscheme("bamboo")  -- Change this line
+    end,
+  },
+}
+```
+
+### Steps to Change:
+
+1. Open `lua/leyland/plugins/colorscheme.lua`
+2. Find line 37 with `vim.cmd.colorscheme("bamboo")`
+3. Replace `"bamboo"` with your preferred colorscheme name
+4. Save and restart Neovim
+
+<Note>
+  All colorschemes are loaded with `priority = 1000` to ensure they load before other plugins that may depend on them.
+</Note>
+
+## Runtime Switching
+
+You can also switch colorschemes at runtime without editing the configuration:
+
+```vim
+:colorscheme catppuccin
+:colorscheme tokyonight
+:colorscheme bamboo
+```
+
+These changes won't persist after restarting Neovim unless you update the configuration file.

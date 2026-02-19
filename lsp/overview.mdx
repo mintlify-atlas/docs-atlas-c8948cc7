@@ -1,0 +1,108 @@
+---
+title: 'LSP Overview'
+description: 'Language Server Protocol configuration and keybindings'
+icon: 'code'
+---
+
+## What is LSP?
+
+The Language Server Protocol (LSP) provides intelligent code features like:
+
+- Go to definition and references
+- Code completion
+- Diagnostics and error checking
+- Code actions and refactoring
+- Hover documentation
+- Symbol renaming
+
+This configuration uses `nvim-lspconfig` with automatic LSP attachment via the `LspAttach` autocommand.
+
+## LSP Keybindings
+
+All keybindings are automatically set when an LSP server attaches to a buffer:
+
+### Navigation
+
+| Keybinding | Action | Description |
+|------------|--------|-------------|
+| `gR` | Show LSP references | Opens Telescope with all references |
+| `gd` | Go to definition | Jump to symbol definition |
+| `gi` | Show implementations | Opens Telescope with implementations |
+| `gt` | Show type definitions | Opens Telescope with type definitions |
+
+### Code Actions
+
+| Keybinding | Mode | Action | Description |
+|------------|------|--------|-------------|
+| `<leader>ca` | Normal/Visual | Code actions | Show available code actions |
+| `<leader>rn` | Normal | Smart rename | Rename symbol across workspace |
+
+### Diagnostics
+
+| Keybinding | Action | Description |
+|------------|--------|-------------|
+| `<leader>D` | Buffer diagnostics | Show all diagnostics in current file |
+| `<leader>d` | Line diagnostics | Show diagnostics for current line |
+| `[d` | Previous diagnostic | Jump to previous diagnostic with float |
+| `]d` | Next diagnostic | Jump to next diagnostic with float |
+
+### Documentation & Utilities
+
+| Keybinding | Action | Description |
+|------------|--------|-------------|
+| `K` | Hover documentation | Show documentation for symbol under cursor |
+| `<leader>rs` | Restart LSP | Restart the LSP server |
+
+## Diagnostic Configuration
+
+Diagnostics are configured with custom signs and severity-based underlines:
+
+```lua
+vim.diagnostic.config({
+  underline = {
+    severity = { min = severity.ERROR },
+  },
+  signs = {
+    text = {
+      [severity.ERROR] = " ",
+      [severity.WARN] = " ",
+      [severity.HINT] = "󰠠 ",
+      [severity.INFO] = " ",
+    },
+  },
+})
+```
+
+**Key features:**
+- Only ERROR severity diagnostics are underlined
+- Custom icons for each diagnostic severity level
+- Diagnostic navigation shows floating windows automatically
+
+## LSP Attachment
+
+The configuration uses an autocommand that runs when LSP attaches:
+
+```lua
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+  callback = function(ev)
+    -- Keybindings are set here for the attached buffer
+  end,
+})
+```
+
+This ensures keybindings are only active in buffers with an active LSP server.
+
+## Related Pages
+
+<CardGroup cols={3}>
+  <Card title="Mason" icon="toolbox" href="/lsp/mason">
+    LSP server installation
+  </Card>
+  <Card title="Autocompletion" icon="sparkles" href="/lsp/autocompletion">
+    nvim-cmp setup
+  </Card>
+  <Card title="Formatting" icon="wand-magic-sparkles" href="/lsp/formatting">
+    Code formatting with Conform
+  </Card>
+</CardGroup>

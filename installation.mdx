@@ -1,0 +1,315 @@
+---
+title: Installation
+description: Step-by-step guide to installing nvim-luffy and getting your development environment ready
+---
+
+# Installation Guide
+
+Get nvim-luffy up and running on your system in just a few minutes. This guide will walk you through the prerequisites, installation process, and first-time setup.
+
+## Prerequisites
+
+Before installing nvim-luffy, ensure you have the following installed on your system:
+
+<Steps>
+  <Step title="Neovim 0.9 or Higher">
+    nvim-luffy requires Neovim version 0.9 or later to support the latest LSP features and plugin APIs.
+
+    <CodeGroup>
+    ```bash macOS (Homebrew)
+    brew install neovim
+    ```
+
+    ```bash Ubuntu/Debian
+    sudo add-apt-repository ppa:neovim-ppa/unstable
+    sudo apt update
+    sudo apt install neovim
+    ```
+
+    ```bash Arch Linux
+    sudo pacman -S neovim
+    ```
+
+    ```bash From Source
+    git clone https://github.com/neovim/neovim
+    cd neovim
+    make CMAKE_BUILD_TYPE=RelWithDebInfo
+    sudo make install
+    ```
+    </CodeGroup>
+
+    Verify your installation:
+    ```bash
+    nvim --version
+    # Should show v0.9.0 or higher
+    ```
+  </Step>
+
+  <Step title="Git">
+    Git is required for cloning the configuration and for plugin management with lazy.nvim.
+
+    <CodeGroup>
+    ```bash macOS (Homebrew)
+    brew install git
+    ```
+
+    ```bash Ubuntu/Debian
+    sudo apt install git
+    ```
+
+    ```bash Arch Linux
+    sudo pacman -S git
+    ```
+    </CodeGroup>
+
+    Verify installation:
+    ```bash
+    git --version
+    ```
+  </Step>
+
+  <Step title="A Nerd Font (Recommended)">
+    Nerd Fonts are required for proper icon display in the file explorer, statusline, and completion menu.
+
+    <Note>
+      Popular choices include **JetBrains Mono Nerd Font**, **FiraCode Nerd Font**, or **Hack Nerd Font**.
+    </Note>
+
+    **Installation methods:**
+
+    <Tabs>
+      <Tab title="Automatic (macOS/Linux)">
+        ```bash
+        # Install a Nerd Font using Homebrew
+        brew tap homebrew/cask-fonts
+        brew install --cask font-jetbrains-mono-nerd-font
+        ```
+      </Tab>
+
+      <Tab title="Manual Download">
+        1. Visit [Nerd Fonts Downloads](https://www.nerdfonts.com/font-downloads)
+        2. Download your preferred font (e.g., JetBrainsMono)
+        3. Extract and install the font files on your system
+        4. Configure your terminal to use the Nerd Font
+      </Tab>
+    </Tabs>
+
+    After installation, **configure your terminal emulator** to use the Nerd Font:
+    - **iTerm2**: Preferences → Profiles → Text → Font
+    - **Alacritty**: Edit `~/.config/alacritty/alacritty.yml`
+    - **Kitty**: Edit `~/.config/kitty/kitty.conf`
+    - **WezTerm**: Edit `~/.wezterm.lua`
+  </Step>
+
+  <Step title="Build Tools (for Telescope FZF)">
+    The Telescope FZF native extension requires compilation tools.
+
+    <CodeGroup>
+    ```bash macOS
+    xcode-select --install
+    # Or install via Homebrew
+    brew install cmake
+    ```
+
+    ```bash Ubuntu/Debian
+    sudo apt install build-essential cmake
+    ```
+
+    ```bash Arch Linux
+    sudo pacman -S base-devel cmake
+    ```
+    </CodeGroup>
+  </Step>
+</Steps>
+
+## Installation
+
+<Warning>
+  If you have an existing Neovim configuration, **back it up first**! This will overwrite your `~/.config/nvim` directory.
+
+  ```bash
+  # Backup your existing config
+  mv ~/.config/nvim ~/.config/nvim.backup
+  mv ~/.local/share/nvim ~/.local/share/nvim.backup
+  ```
+</Warning>
+
+<Steps>
+  <Step title="Clone the Repository">
+    Clone nvim-luffy into your Neovim configuration directory:
+
+    ```bash
+    git clone https://github.com/yourusername/nvim-luffy.git ~/.config/nvim
+    ```
+
+    <Note>
+      On Windows, use `$env:LOCALAPPDATA\nvim` instead of `~/.config/nvim`
+    </Note>
+  </Step>
+
+  <Step title="Launch Neovim">
+    Open Neovim for the first time. The plugin manager (lazy.nvim) will automatically bootstrap and install all plugins:
+
+    ```bash
+    nvim
+    ```
+
+    You'll see a window showing the installation progress. This may take 1-2 minutes depending on your internet connection.
+
+    <img src="/images/lazy-install.png" alt="Lazy.nvim installing plugins" />
+  </Step>
+
+  <Step title="Install LSP Servers & Tools">
+    After plugins are installed, Mason will automatically install the configured LSP servers, formatters, and linters.
+
+    The following tools will be installed automatically:
+
+    **LSP Servers:**
+    - `ts_ls` - TypeScript/JavaScript
+    - `html` - HTML
+    - `cssls` - CSS
+    - `tailwindcss` - Tailwind CSS
+    - `svelte` - Svelte
+    - `lua_ls` - Lua
+    - `graphql` - GraphQL
+    - `emmet_ls` - Emmet
+    - `prismals` - Prisma
+    - `pyright` - Python
+    - `eslint` - ESLint
+
+    **Formatters & Linters:**
+    - `prettier` - Multi-language formatter
+    - `stylua` - Lua formatter
+    - `black` - Python formatter
+    - `isort` - Python import sorter
+    - `pylint` - Python linter
+    - `eslint_d` - Fast ESLint daemon
+
+    You can check installation status with:
+    ```vim
+    :Mason
+    ```
+  </Step>
+
+  <Step title="Verify Installation">
+    Restart Neovim and verify everything works:
+
+    ```bash
+    nvim
+    ```
+
+    You should see the custom One Piece-themed Alpha dashboard:
+
+    <img src="/images/alpha-dashboard.png" alt="nvim-luffy dashboard" />
+
+    Press `<Space><Space>` to open Telescope file finder and verify plugins are working.
+  </Step>
+</Steps>
+
+## Post-Installation
+
+### Customizing the Configuration
+
+The configuration is organized in a modular structure:
+
+```
+~/.config/nvim/
+├── init.lua                    # Entry point
+├── lua/
+│   └── leyland/
+│       ├── core/
+│       │   ├── init.lua       # Core initialization
+│       │   ├── options.lua    # Vim options
+│       │   ├── keymaps.lua    # Global keybindings
+│       │   └── autocommands.lua
+│       ├── plugins/
+│       │   ├── colorscheme.lua
+│       │   ├── telescope.lua
+│       │   ├── harpoon.lua
+│       │   ├── nvim-tree.lua
+│       │   ├── nvim-cmp.lua   # Completion
+│       │   └── lsp/
+│       │       ├── lsp.lua
+│       │       └── mason.lua
+│       └── lazy.lua           # Plugin manager config
+```
+
+<Tip>
+  To customize keybindings, edit `lua/leyland/core/keymaps.lua`. To add or remove plugins, modify files in `lua/leyland/plugins/`.
+</Tip>
+
+### Changing the Colorscheme
+
+By default, nvim-luffy uses the **Bamboo** theme. To change it, edit `lua/leyland/plugins/colorscheme.lua:37`:
+
+```lua lua/leyland/plugins/colorscheme.lua
+config = function()
+  -- Set your default theme here
+  vim.cmd.colorscheme("bamboo")  -- Change to: tokyonight, catppuccin, rose-pine, onedark, or modus
+end,
+```
+
+Available themes:
+- `catppuccin` - Soothing pastel theme
+- `tokyonight` - Dark theme inspired by Tokyo's night
+- `modus` - Accessible and readable themes
+- `bamboo` - Warm, nature-inspired theme (default)
+- `onedark` - Atom's One Dark theme
+- `rose-pine` - Low-contrast theme
+
+### Updating nvim-luffy
+
+To update nvim-luffy and all plugins:
+
+```bash
+cd ~/.config/nvim
+git pull
+```
+
+Then in Neovim:
+```vim
+:Lazy sync
+```
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Icons not displaying correctly">
+    Make sure you have a Nerd Font installed and configured in your terminal emulator. See the [Nerd Font prerequisite](#prerequisites) above.
+  </Accordion>
+
+  <Accordion title="LSP not working for my language">
+    1. Check if the LSP server is installed: `:Mason`
+    2. Verify the server is running: `:LspInfo`
+    3. Check logs: `:lua vim.cmd('edit ' .. vim.lsp.get_log_path())`
+  </Accordion>
+
+  <Accordion title="Telescope FZF native not working">
+    The native extension requires compilation. Make sure you have build tools installed:
+    ```bash
+    cd ~/.local/share/nvim/lazy/telescope-fzf-native.nvim
+    make
+    ```
+  </Accordion>
+
+  <Accordion title="Slow startup time">
+    nvim-luffy uses lazy-loading to optimize startup. If you experience slowness:
+    1. Check plugin load times: `:Lazy profile`
+    2. Ensure you're using Neovim 0.9+
+    3. Update all plugins: `:Lazy sync`
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+Now that nvim-luffy is installed, head over to the [Quick Start Guide](/quickstart) to learn the essential keybindings and workflows that will make you productive immediately.
+
+<CardGroup cols={2}>
+  <Card title="Quick Start Tutorial" icon="rocket" href="/quickstart">
+    Learn the essential keybindings in 5 minutes
+  </Card>
+  
+  <Card title="Full Keybindings Reference" icon="keyboard" href="/configuration/keymaps">
+    Complete list of all shortcuts and commands
+  </Card>
+</CardGroup>

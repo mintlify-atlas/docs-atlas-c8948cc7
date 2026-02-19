@@ -1,0 +1,124 @@
+---
+title: 'Mason LSP Installer'
+description: 'Automatic installation of LSP servers and tools with Mason'
+icon: 'toolbox'
+---
+
+## What is Mason?
+
+Mason is a portable package manager for Neovim that automatically installs and manages:
+- Language servers
+- Formatters
+- Linters
+- DAP adapters
+
+This configuration uses `mason-lspconfig.nvim` and `mason-tool-installer.nvim` for automatic installation.
+
+## Language Servers
+
+These LSP servers are automatically installed via `mason-lspconfig`:
+
+| Server | Language | Description |
+|--------|----------|-------------|
+| `ts_ls` | TypeScript/JavaScript | TypeScript language server |
+| `html` | HTML | HTML language server |
+| `cssls` | CSS/SCSS/Less | CSS language server |
+| `tailwindcss` | Tailwind CSS | Tailwind CSS IntelliSense |
+| `svelte` | Svelte | Svelte language server |
+| `lua_ls` | Lua | Lua language server |
+| `graphql` | GraphQL | GraphQL language server |
+| `emmet_ls` | Emmet | Emmet abbreviation expansion |
+| `prismals` | Prisma | Prisma schema language server |
+| `pyright` | Python | Python type checker and language server |
+| `eslint` | JavaScript/TypeScript | ESLint language server |
+
+## Additional Tools
+
+These formatters and linters are automatically installed via `mason-tool-installer`:
+
+### Formatters
+
+| Tool | Languages | Purpose |
+|------|-----------|----------|
+| `prettier` | JS/TS/HTML/CSS/JSON/Markdown | Multi-language formatter |
+| `stylua` | Lua | Lua code formatter |
+| `black` | Python | Python code formatter |
+| `isort` | Python | Python import sorter |
+
+### Linters
+
+| Tool | Language | Purpose |
+|------|----------|----------|
+| `pylint` | Python | Python code linter |
+| `eslint_d` | JavaScript/TypeScript | Fast ESLint daemon |
+
+## Mason UI
+
+The Mason UI is configured with custom icons:
+
+```lua
+ui = {
+  icons = {
+    package_installed = "✓",
+    package_pending = "➜",
+    package_uninstalled = "✗",
+  },
+}
+```
+
+**Open Mason UI:**
+```vim
+:Mason
+```
+
+## How Auto-Installation Works
+
+<Steps>
+  <Step title="Define Required Packages">
+    Language servers and tools are listed in `ensure_installed` arrays in the Mason configuration files.
+  </Step>
+  
+  <Step title="Automatic Installation">
+    When Neovim starts, Mason checks if the required packages are installed. If not, it automatically downloads and installs them.
+  </Step>
+  
+  <Step title="LSP Server Registration">
+    `mason-lspconfig` automatically sets up LSP servers with default configurations and capabilities from nvim-cmp.
+  </Step>
+</Steps>
+
+## Configuration Files
+
+The Mason setup is defined in:
+- **LSP servers:** `lua/leyland/plugins/lsp/mason.lua:6-18`
+- **Additional tools:** `lua/leyland/plugins/lsp/mason.lua:39-46`
+
+```lua
+ensure_installed = {
+  "ts_ls",
+  "html",
+  "cssls",
+  "tailwindcss",
+  "svelte",
+  "lua_ls",
+  "graphql",
+  "emmet_ls",
+  "prismals",
+  "pyright",
+  "eslint",
+}
+```
+
+## Related Pages
+
+<CardGroup cols={3}>
+  <Card title="LSP Overview" icon="code" href="/lsp/overview">
+    LSP keybindings and configuration
+  </Card>
+  <Card title="Autocompletion" icon="sparkles" href="/lsp/autocompletion">
+    nvim-cmp setup
+  </Card>
+  <Card title="Formatting" icon="wand-magic-sparkles" href="/lsp/formatting">
+    Code formatting with Conform
+  </Card>
+</CardGroup>
